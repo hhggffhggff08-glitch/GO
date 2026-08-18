@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☠️ OMEGA SPECTRE — GOD CONTROL</title>
+    <style>
+        /* ============================================================ */
+        /*  🔥 الخلفية المتحركة برموز القراصنة                            */
+        /* ============================================================ */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0f;
+            color: #00ff41;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* === خلفية المصفوفة === */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: #0a0a0f;
+            overflow: hidden;
+        }
+        #matrix-bg canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* === رموز القراصنة المتطايرة === */
+        .hacker-symbols {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .hacker-symbols span {
+            position: absolute;
+            color: #00ff4133;
+            font-size: 18px;
+            animation: floatSymbol 20s infinite linear;
+            opacity: 0;
+        }
+        @keyframes floatSymbol {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+        }
+        .hacker-symbols span:nth-child(1) { left: 5%; animation-duration: 18s; font-size: 24px; }
+        .hacker-symbols span:nth-child(2) { left: 15%; animation-duration: 22s; font-size: 16px; animation-delay: 2s; }
+        .hacker-symbols span:nth-child(3) { left: 25%; animation-duration: 20s; font-size: 28px; animation-delay: 4s; }
+        .hacker-symbols span:nth-child(4) { left: 35%; animation-duration: 25s; font-size: 14px; animation-delay: 1s; }
+        .hacker-symbols span:nth-child(5) { left: 45%; animation-duration: 19s; font-size: 22px; animation-delay: 3s; }
+        .hacker-symbols span:nth-child(6) { left: 55%; animation-duration: 23s; font-size: 18px; animation-delay: 5s; }
+        .hacker-symbols span:nth-child(7) { left: 65%; animation-duration: 21s; font-size: 26px; animation-delay: 2s; }
+        .hacker-symbols span:nth-child(8) { left: 75%; animation-duration: 24s; font-size: 12px; animation-delay: 4s; }
+        .hacker-symbols span:nth-child(9) { left: 85%; animation-duration: 17s; font-size: 20px; animation-delay: 1s; }
+        .hacker-symbols span:nth-child(10) { left: 95%; animation-duration: 26s; font-size: 30px; animation-delay: 3s; }
+
+        /* ============================================================ */
+        /*  🔥 المحتوى الرئيسي                                            */
+        /* ============================================================ */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* === الهيدر === */
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 2px solid #00ff4133;
+            margin-bottom: 30px;
+            background: rgba(10,10,15,0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+        .header h1 {
+            font-size: 38px;
+            color: #ff0040;
+            text-shadow: 0 0 30px #ff004066, 0 0 60px #ff004033;
+            animation: glitch 3s infinite;
+        }
+        @keyframes glitch {
+            0%, 95%, 100% { text-shadow: 0 0 30px #ff004066; }
+            96% { text-shadow: -5px 0 #00ff41, 5px 0 #ff0040; }
+            97% { text-shadow: 5px 0 #00ff41, -5px 0 #ff0040; }
+        }
+        .header p {
+            color: #00ff4188;
+            font-size: 14px;
+        }
+        .header .glitch-text {
+            color: #00ff41;
+            animation: glitchText 2s infinite;
+        }
+        @keyframes glitchText {
+            0%, 90%, 100% { opacity: 1; }
+            92% { opacity: 0.2; transform: translateX(-3px); }
+            94% { opacity: 0.8; transform: translateX(3px); }
+        }
+
+        /* === شريط الحالة === */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: rgba(20,20,30,0.9);
+            border: 1px solid #00ff4122;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .status-bar .item {
+            font-size: 13px;
+            color: #00ff4166;
+        }
+        .status-bar .item span { color: #00ff41; }
+        .status-bar .item .online { color: #00ff41; animation: pulse 1.5s infinite; }
+        .status-bar .item .offline { color: #ff0040; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* === أزرار التحكم السريع === */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(20,20,30,0.9);
+            border: 1px solid #00ff4122;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .quick-actions .btn {
+            padding: 10px 24px;
+            border-radius: 30px;
+            border: 1px solid #00ff4133;
+            background: transparent;
+            color: #00ff41;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+        .quick-actions .btn:hover {
+            background: #00ff4111;
+            border-color: #00ff41;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px #00ff4111;
+        }
+        .quick-actions .btn.danger { border-color: #ff004066; color: #ff0040; }
+        .quick-actions .btn.danger:hover { background: #ff004011; border-color: #ff0040; }
+        .quick-actions .btn.success { border-color: #00ff4166; color: #00ff41; }
+        .quick-actions .btn.success:hover { background: #00ff4111; }
+        .quick-actions .btn.primary { border-color: #0088ff66; color: #0088ff; }
+        .quick-actions .btn.primary:hover { background: #0088ff11; border-color: #0088ff; }
+        .quick-actions .btn.gold { border-color: #ffaa0066; color: #ffaa00; }
+        .quick-actions .btn.gold:hover { background: #ffaa0011; border-color: #ffaa00; }
+
+        /* === شبكة الوحدات === */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        .card {
+            background: rgba(20,20,30,0.9);
+            border: 1px solid #00ff4122;
+            border-radius: 16px;
+            padding: 18px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, #00ff4111 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+        .card:hover::before {
+            opacity: 1;
+        }
+        .card:hover {
+            border-color: #00ff41;
+            transform: translateY(-4px);
+            box-shadow: 0 0 40px #00ff4111;
+        }
+        .card h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+            color: #00ff41;
+        }
+        .card .desc {
+            font-size: 12px;
+            color: #00ff4166;
+            margin-bottom: 12px;
+        }
+        .card .path {
+            font-size: 10px;
+            color: #00ff4133;
+            margin-bottom: 10px;
+        }
+        .card .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .card .btn-group .btn {
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid #00ff4133;
+            background: transparent;
+            color: #00ff41;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 11px;
+            transition: all 0.3s;
+        }
+        .card .btn-group .btn:hover {
+            background: #00ff4111;
+            border-color: #00ff41;
+            transform: scale(1.05);
+        }
+        .card .btn-group .btn.danger { border-color: #ff004066; color: #ff0040; }
+        .card .btn-group .btn.danger:hover { background: #ff004011; border-color: #ff0040; }
+        .card .btn-group .btn.success { border-color: #00ff4166; color: #00ff41; }
+        .card .btn-group .btn.success:hover { background: #00ff4111; }
+        .card .btn-group .btn.primary { border-color: #0088ff66; color: #0088ff; }
+        .card .btn-group .btn.primary:hover { background: #0088ff11; border-color: #0088ff; }
+        .card .btn-group .btn.gold { border-color: #ffaa0066; color: #ffaa00; }
+        .card .btn-group .btn.gold:hover { background: #ffaa0011; border-color: #ffaa00; }
+
+        /* === سجل الأوامر === */
+        .log-section {
+            margin-top: 20px;
+            background: rgba(20,20,30,0.9);
+            border: 1px solid #00ff4122;
+            border-radius: 16px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+        }
+        .log-section h2 {
+            color: #00ff41;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .log-box {
+            background: #0a0a0f;
+            border-radius: 12px;
+            padding: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 12px;
+            border: 1px solid #00ff4122;
+        }
+        .log-box .entry {
+            padding: 4px 0;
+            border-bottom: 1px solid #00ff4111;
+            color: #00ff4188;
+        }
+        .log-box .entry .time { color: #00ff4133; margin-left: 10px; }
+        .log-box .entry .success { color: #00ff41; }
+        .log-box .entry .error { color: #ff0040; }
+        .log-box .entry .info { color: #0088ff; }
+
+        /* === الفوتر === */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #00ff4133;
+            font-size: 12px;
+            border-top: 1px solid #00ff4122;
+            margin-top: 30px;
+        }
+
+        /* === نافذة منبثقة === */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #14141f;
+            border: 1px solid #00ff4133;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 700px;
+            width: 95%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-content .close {
+            float: left;
+            background: transparent;
+            border: none;
+            color: #ff0040;
+            font-size: 28px;
+            cursor: pointer;
+        }
+        .modal-content h2 { color: #ff0040; margin-bottom: 16px; }
+        .modal-content pre {
+            background: #0a0a0f;
+            padding: 16px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-size: 12px;
+            color: #00ff41;
+            border: 1px solid #00ff4122;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 700px) {
+            .grid { grid-template-columns: 1fr; }
+            .status-bar { flex-direction: column; }
+            .quick-actions { flex-direction: column; align-items: center; }
+            .header h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================ -->
+    <!--  🔥 خلفية المصفوفة (Matrix Rain)                             -->
+    <!-- ============================================================ -->
+    <div id="matrix-bg">
+        <canvas id="matrixCanvas"></canvas>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  🔥 رموز القراصنة المتطايرة                                   -->
+    <!-- ============================================================ -->
+    <div class="hacker-symbols">
+        <span>☠️</span>
+        <span>💀</span>
+        <span>👾</span>
+        <span>🔥</span>
+        <span>⚡</span>
+        <span>🖥️</span>
+        <span>🔓</span>
+        <span>💻</span>
+        <span>🔐</span>
+        <span>🚀</span>
+        <span>🛸</span>
+        <span>💣</span>
+        <span>📡</span>
+        <span>🔮</span>
+        <span>🧠</span>
+        <span>🕸️</span>
+        <span>🌐</span>
+        <span>🔥</span>
+        <span>⚡</span>
+        <span>💀</span>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  🔥 المحتوى الرئيسي                                            -->
+    <!-- ============================================================ -->
+    <div class="container">
+
+        <!-- === الهيدر === -->
+        <div class="header">
+            <h1>☠️ OMEGA SPECTRE</h1>
+            <p class="glitch-text">🔥 GOD CONTROL — جميع الملفات تحت سيطرتك</p>
+            <p style="font-size:12px; color:#ff004066;">⚠️ استخدام هذا النظام لأغراض تعليمية فقط</p>
+        </div>
+
+        <!-- === شريط الحالة === -->
+        <div class="status-bar">
+            <div class="item">🚀 الحالة: <span class="online" id="statusText">ONLINE</span></div>
+            <div class="item">📦 الملفات: <span id="fileCount">165</span></div>
+            <div class="item">📂 المجلدات: <span id="folderCount">18</span></div>
+            <div class="item">🎯 الضحايا: <span id="victimCount">0</span></div>
+            <div class="item">⏱️ وقت التشغيل: <span id="uptime">00:00:00</span></div>
+            <div class="item">🧠 الذاكرة: <span id="memoryUsage">0%</span></div>
+            <div class="item">💻 المعالج: <span id="cpuUsage">0%</span></div>
+        </div>
+
+        <!-- === أزرار التحكم السريع === -->
+        <div class="quick-actions">
+            <button class="btn success" onclick="activateAll()">🚀 تفعيل الكل</button>
+            <button class="btn" onclick="getStatus()">📊 حالة الكل</button>
+            <button class="btn danger" onclick="stopAll()">⛔ إيقاف الكل</button>
+            <button class="btn primary" onclick="refreshStatus()">🔄 تحديث</button>
+            <button class="btn gold" onclick="copyLink()">📋 نسخ الرابط</button>
+            <button class="btn" onclick="showVictims()">🎯 عرض الضحايا</button>
+        </div>
+
+        <!-- === شبكة الوحدات === -->
+        <div class="grid" id="moduleGrid">
+            <!-- سيتم تعبئتها بواسطة JavaScript -->
+        </div>
+
+        <!-- === سجل الأوامر === -->
+        <div class="log-section">
+            <h2>📜 سجل الأوامر</h2>
+            <div class="log-box" id="logBox">
+                <div class="entry"><span class="time">[نظام]</span> <span class="success">✅ OMEGA SPECTRE تم تفعيله</span></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            ☠️ OMEGA SPECTRE GODFALL — جميع الحقوق محفوظة للـ Void
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  نافذة منبثقة                                                 -->
+    <!-- ============================================================ -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal()">✕</button>
+            <h2 id="modalTitle">نتيجة التنفيذ</h2>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  🔥 JavaScript — Matrix Rain + التحكم الكامل                  -->
+    <!-- ============================================================ -->
+    <script>
+        // ============================================================
+        //  🔥 Matrix Rain (خلفية المصفوفة)
+        // ============================================================
+        (function matrixRain() {
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=[]{}|;:,.<>?/';
+            const columns = Math.floor(width / 16);
+            const drops = new Array(columns).fill(1);
+
+            function draw() {
+                ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = '#00ff41';
+                ctx.font = '15px monospace';
+
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillStyle = Math.random() > 0.975 ? '#ff0040' : '#00ff41';
+                    ctx.fillText(char, i * 16, drops[i] * 16);
+                    if (drops[i] * 16 > height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            draw();
+        })();
+
+        // ============================================================
+        //  🔥 التحكم الكامل في OMEGA_SPECTRE_GODFALL
+        // ============================================================
+
+        const baseUrl = window.location.origin;
+
+        // تعريف جميع الوحدات
+        const modules = [
+            { name: 'quantum_core', label: '🔮 المحرك الكمومي', desc: 'تشابك 512 بت، عشوائية كمومية' },
+            { name: 'ai_autopilot', label: '🧠 الذكاء الاصطناعي', desc: 'ذاكرة لا نهائية، تخطيط ذاتي' },
+            { name: 'mutation_engine', label: '🧬 محرك التغيير', desc: 'تغيير الشكل كل 0.00001 ثانية' },
+            { name: 'mesh_network', label: '🕸️ الشبكة العنكبوتية', desc: 'P2P، عقد زومبي، تحكم لامركزي' },
+            { name: 'military_jamming', label: '📡 التشويش العسكري', desc: 'تشويش ترددات، تعمية رادارات' },
+            { name: 'quantum_resistant', label: '🔒 التشفير الكمومي', desc: 'Kyber, Dilithium, SPHINCS+' },
+            { name: 'zero_day_vault', label: '💀 مخزن الثغرات', desc: 'Zero-Click على جميع المنصات' },
+            { name: 'full_control', label: '👁️ السيطرة الكاملة', desc: 'بشر، أقمار، نووي، كهرباء' },
+            { name: 'god_radar', label: '📡 الرادار الإلهي', desc: 'مدى 10,000,000 كم' },
+            { name: 'instant_breach', label: '⚡ الاختراق الفوري', desc: 'Zero-Click، حقن حمولات' },
+            { name: 'new_dimensions', label: '🌌 الأبعاد الجديدة', desc: 'زمن، واقع، أكوان موازية' },
+            { name: 'ultimate_powers', label: '⚡ القوى الخارقة', desc: 'قراءة أفكار، ت
