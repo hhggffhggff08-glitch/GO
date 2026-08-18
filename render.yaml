@@ -1,0 +1,127 @@
+# ============================================================
+# ===== OMEGA_SPECTRE_GODFALL — RENDER DEPLOYMENT =====
+# ===== Version: 1.0.0 | D4 Ultimate Architecture =====
+# ============================================================
+
+services:
+  # ===== خادم الويب الرئيسي =====
+  - type: web
+    name: omega-spectre-godfall
+    runtime: python
+    plan: free
+    
+    # ===== أمر البناء =====
+    buildCommand: |
+      apt-get update
+      apt-get install -y nmap net-tools openvpn wireguard tcpdump
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install gunicorn
+      python -c "import nltk; nltk.download('punkt')"
+      python -c "import spacy; spacy.load('en_core_web_sm')"
+    
+    # ===== أمر التشغيل الإلهي =====
+    startCommand: |
+      gunicorn main_godfall:app \
+        --workers 4 \
+        --threads 4 \
+        --worker-class gthread \
+        --timeout 600 \
+        --bind 0.0.0.0:$PORT \
+        --access-logfile - \
+        --error-logfile - \
+        --preload \
+        --max-requests 1000 \
+        --max-requests-jitter 100 \
+        --worker-tmp-dir /dev/shm
+    
+    # ===== متغيرات البيئة =====
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PORT
+        value: 5000
+      - key: FLASK_APP
+        value: main_godfall.py
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: QUANTUM_MODE
+        value: active
+      - key: AI_AUTOPILOT
+        value: active
+      - key: MESH_NETWORK
+        value: active
+      - key: GOD_RADAR
+        value: active
+      - key: INTERNET_GOD
+        value: active
+      - key: POLYMORPHIC
+        value: active
+      - key: GODFALL_VERSION
+        value: 1.0.0
+      - key: GODFALL_MODE
+        value: god
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+    
+    # ===== فحص الصحة =====
+    healthCheckPath: /health
+    healthCheckTimeout: 300
+    
+    # ===== النشر التلقائي =====
+    autoDeploy: true
+    
+    # ===== الموارد =====
+    numInstances: 1
+    
+    # ===== النطاق =====
+    domains:
+      - omega-spectre-godfall.onrender.com
+
+  # ===== قاعدة البيانات =====
+  - type: database
+    name: godfall-db
+    databaseName: godfall
+    user: godfall_user
+    plan: free
+
+  # ===== Redis (للذاكرة المؤقتة) =====
+  - type: redis
+    name: godfall-redis
+    plan: free
+    maxmemoryPolicy: noeviction
+
+  # ===== خادم الخلفية (Worker) =====
+  - type: worker
+    name: godfall-worker
+    runtime: python
+    plan: free
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: |
+      python -c "while True: import time; time.sleep(60)"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: godfall-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: godfall-redis
+          type: redis
+          property: connectionString

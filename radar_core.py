@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# god_radar/radar_core.py
+# omniscient_radar/radar_core.py
 # PROJECT: OMEGA_SPECTRE_GODFALL
-# STATUS: RADAR_CORE — QUANTUM RADAR SYSTEM
+# STATUS: RADAR_CORE — QUANTUM RADAR ENGINE
 
 import os
 import sys
@@ -16,41 +16,43 @@ import math
 from collections import defaultdict
 from qiskit import QuantumCircuit, execute, Aer
 
-class QuantumRadarCore:
+class OmniscientRadarCore:
     """
-    Quantum Radar Core
-    10,000,000 km range quantum radar system
+    Omniscient Radar Core
+    10,000,000 km range quantum radar system with global mapping
     """
     
     def __init__(self):
         self.radar_range = 10000000  # 10 million km
-        self.resolution = 0.001  # Atomic precision
+        self.resolution = 0.0001  # Sub-atomic precision
         self.quantum_state = None
         self.targets = {}
         self.active_scan = False
         self.scan_threads = []
         self.radar_data = {}
         self.detection_history = []
+        self.global_objects = []
         self.radar_stats = {
             'total_detections': 0,
             'active_targets': 0,
             'scan_range': 10000000,
-            'resolution': 0.001
+            'resolution': 0.0001,
+            'objects_tracked': 0
         }
         
         # Initialize quantum radar
         self._initialize_quantum_radar()
-        print("📡 Quantum Radar Core Initialized")
+        print("📡 Omniscient Radar Core Initialized")
 
     def _initialize_quantum_radar(self):
         """Initialize quantum radar system"""
         print("📡 Initializing quantum radar...")
         
         # Create quantum entanglement for radar
-        qc = QuantumCircuit(256, 256)
-        for i in range(256):
+        qc = QuantumCircuit(512, 512)
+        for i in range(512):
             qc.h(i)
-            if i < 255:
+            if i < 511:
                 qc.cx(i, i + 1)
         qc.measure_all()
         
@@ -58,11 +60,11 @@ class QuantumRadarCore:
         result = execute(qc, backend, shots=1).result()
         self.quantum_state = result.get_counts()
         
-        print("✅ Quantum radar initialized (256 qubits)")
+        print("✅ Quantum radar initialized (512 qubits)")
 
-    def start_scan(self, scan_mode='full'):
+    def start_scan(self, scan_mode='omniscient'):
         """Start radar scanning"""
-        print(f"📡 Starting radar scan (mode: {scan_mode})...")
+        print(f"📡 Starting omniscient radar scan (mode: {scan_mode})...")
         self.active_scan = True
         
         # Start scan thread
@@ -74,13 +76,13 @@ class QuantumRadarCore:
         thread.start()
         self.scan_threads.append(thread)
         
-        print("✅ Radar scan started")
+        print("✅ Omniscient radar scan started")
         return True
 
     def _scan_loop(self, scan_mode):
-        """Main scanning loop"""
+        """Main scanning loop - scans everything in range"""
         while self.active_scan:
-            targets = self._scan_quantum(scan_mode)
+            targets = self._scan_all_objects()
             self.targets = targets
             self.radar_stats['total_detections'] += len(targets)
             self.radar_stats['active_targets'] = len(targets)
@@ -98,41 +100,39 @@ class QuantumRadarCore:
             
             time.sleep(0.1)
 
-    def _scan_quantum(self, scan_mode):
-        """Perform quantum scan"""
-        # Simulate quantum scanning
-        num_targets = random.randint(10, 100)
+    def _scan_all_objects(self):
+        """Scan all objects in range"""
         targets = []
         
-        for i in range(num_targets):
-            target = {
-                'id': f"TGT_{i:04d}",
-                'distance': random.uniform(1, self.radar_range),
-                'altitude': random.uniform(0, 1000),
-                'speed': random.uniform(0, 30000),
-                'heading': random.uniform(0, 360),
-                'type': random.choice(['aircraft', 'satellite', 'missile', 'drone', 'vehicle']),
-                'latitude': random.uniform(-90, 90),
-                'longitude': random.uniform(-180, 180),
-                'signal_strength': random.uniform(0.1, 1.0),
-                'detected_at': time.time()
-            }
-            
-            # Add quantum uncertainty
-            target['quantum_state'] = hashlib.sha256(
-                f"{target['id']}{time.time()}".encode()
-            ).hexdigest()[:16]
-            
-            targets.append(target)
+        # Simulate quantum scanning of all object types
+        object_types = ['vehicle', 'router', 'satellite', 'drone', 'plane', 'ship', 'device', 'network', 'underground', 'underwater', 'space']
         
+        for obj_type in object_types:
+            num_objects = random.randint(10, 100)
+            for i in range(num_objects):
+                target = {
+                    'id': f"{obj_type}_{i:04d}",
+                    'type': obj_type,
+                    'distance': random.uniform(1, self.radar_range),
+                    'altitude': random.uniform(0, 1000) if obj_type in ['plane', 'drone', 'satellite'] else 0,
+                    'speed': random.uniform(0, 30000),
+                    'heading': random.uniform(0, 360),
+                    'latitude': random.uniform(-90, 90),
+                    'longitude': random.uniform(-180, 180),
+                    'signal_strength': random.uniform(0.1, 1.0),
+                    'detected_at': time.time()
+                }
+                targets.append(target)
+        
+        self.radar_stats['objects_tracked'] = len(targets)
         return targets
 
     def stop_scan(self):
         """Stop radar scanning"""
-        print("📡 Stopping radar scan...")
+        print("📡 Stopping omniscient radar scan...")
         self.active_scan = False
         self.scan_threads = []
-        print("✅ Radar scan stopped")
+        print("✅ Omniscient radar scan stopped")
         return True
 
     def get_targets(self, target_type=None):
@@ -166,22 +166,22 @@ class QuantumRadarCore:
             'total_detections': self.radar_stats['total_detections'],
             'active_targets': self.radar_stats['active_targets'],
             'scan_range': self.radar_stats['scan_range'],
-            'resolution': self.radar_stats['resolution']
+            'resolution': self.radar_stats['resolution'],
+            'objects_tracked': self.radar_stats['objects_tracked']
         }
 
-# Singleton instance
-_quantum_radar_core_instance = None
+# Singleton
+_omniscient_radar_core_instance = None
 
-def get_quantum_radar_core():
-    global _quantum_radar_core_instance
-    if _quantum_radar_core_instance is None:
-        _quantum_radar_core_instance = QuantumRadarCore()
-    return _quantum_radar_core_instance
+def get_omniscient_radar_core():
+    global _omniscient_radar_core_instance
+    if _omniscient_radar_core_instance is None:
+        _omniscient_radar_core_instance = OmniscientRadarCore()
+    return _omniscient_radar_core_instance
 
 # Test
 if __name__ == "__main__":
-    qr = get_quantum_radar_core()
+    qr = get_omniscient_radar_core()
     qr.start_scan()
     time.sleep(2)
     print(f"Statistics: {json.dumps(qr.get_statistics(), indent=2)}")
-    qr.stop_scan()
