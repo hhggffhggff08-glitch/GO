@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OMEGA SPECTRE GODFALL — D10 ULTIMATE C2</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        /* ============================================================
+           الأساسيات — تصميم D10 + OMEGA
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --g: #5cff20;
+            --g2: #2b8f13;
+            --g3: #0b2608;
+            --bg: #010301;
+            --line: #245b12;
+            --panel: rgba(2, 8, 2, 0.92);
+            --red: #ff3939;
+            --amber: #ffc42e;
+            --cyan: #48e6ff;
+            --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+            --font-display: 'Orbitron', 'Courier New', monospace;
+        }
+        
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: var(--g);
+            font-family: var(--font-mono);
+            overflow: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.20) 0 1px, transparent 1px 4px);
+            mix-blend-mode: screen;
+            opacity: 0.38;
+        }
+        
+        /* ============================================================
+           شاشة التحميل
+           ============================================================ */
+        .boot-screen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-display);
+            transition: all 1.5s ease;
+        }
+        
+        .boot-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .boot-screen .title {
+            font-size: 3.5em;
+            color: var(--g);
+            text-shadow: 0 0 60px rgba(92, 255, 32, 0.3);
+            margin-bottom: 20px;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 20px rgba(92, 255, 32, 0.2); }
+            to { text-shadow: 0 0 60px rgba(92, 255, 32, 0.6), 0 0 120px rgba(92, 255, 32, 0.2); }
+        }
+        
+        .boot-screen .title span { color: var(--red); }
+        .boot-screen .sub { color: #444; font-size: 0.8em; letter-spacing: 5px; }
+        .boot-screen .loader {
+            margin-top: 30px;
+            width: 300px;
+            height: 2px;
+            background: #1a1a2e;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .boot-screen .loader .bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--g), var(--cyan));
+            animation: loadBar 2.5s ease-in-out forwards;
+        }
+        @keyframes loadBar {
+            0% { width: 0%; }
+            20% { width: 15%; }
+            40% { width: 35%; }
+            60% { width: 60%; }
+            80% { width: 85%; }
+            100% { width: 100%; }
+        }
+        .boot-screen .version { margin-top: 20px; color: #222; font-size: 0.6em; letter-spacing: 3px; }
+        
+        @media (max-width: 768px) {
+            .boot-screen .title { font-size: 2.2em; }
+            .boot-screen .loader { width: 200px; }
+        }
+        
+        /* ============================================================
+           التطبيق الرئيسي
+           ============================================================ */
+        .app {
+            width: 1536px;
+            height: 1024px;
+            padding: 12px;
+            background: #000;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-origin: center center;
+        }
+        
+        .terminal {
+            height: 100%;
+            border: 2px solid #1d4b0c;
+            border-radius: 9px;
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 45%, #061306, #010401 55%, #000);
+            box-shadow: inset 0 0 80px rgba(80, 255, 20, 0.035), 0 0 25px rgba(80, 255, 20, 0.08);
+        }
+        
+        /* ============================================================
+           الشريط العلوي
+           ============================================================ */
+        .header {
+            height: 86px;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .logo {
+            font-size: clamp(22px, 2.8vw, 40px);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #54ff16;
+        }
+        
+        .logo span { color: var(--red); }
+        
+        .user {
+            margin-top: 6px;
+            color: #51b728;
+            font-size: 14px;
+        }
+        
+        .permission {
+            position: absolute;
+            top: 43px;
+            left: 49%;
+            font-size: 14px;
+        }
+        
+        .win {
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .win span {
+            width: 40px;
+            height: 32px;
+            border: 1px solid #285d12;
+            display: grid;
+            place-items: center;
+            font-size: 21px;
+            cursor: pointer;
+        }
+        
+        .win span:hover { background: #1a3d0a; }
+        
+        /* ============================================================
+           التخطيط الرئيسي
+           ============================================================ */
+        .layout {
+            height: calc(100% - 133px);
+            display: grid;
+            grid-template-columns: 25% 50% 25%;
+            grid-template-rows: 58% 42%;
+            gap: 9px;
+            position: relative;
+            z-index: 4;
+        }
+        
+        .col {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+        
+        .panel {
+            border: 1px solid var(--line);
+            background: var(--panel);
+            overflow: hidden;
+            box-shadow: inset 0 0 25px rgba(60, 255, 20, 0.025);
+        }
+        
+        .title {
+            padding: 13px 16px 9px;
+            font-size: 16px;
+            color: #5edb2b;
+            letter-spacing: 0.5px;
+        }
+        
+        .title::after {
+            content: "";
+            display: block;
+            height: 1px;
+            background: #17470b;
+            margin-top: 9px;
+            width: 94%;
+        }
+        
+        /* ============================================================
+           COMMAND CENTER — التحكم في جميع الملفات
+           ============================================================ */
+        .command { height: 55%; }
+        .overview { height: 45%; }
+        
+        .lines {
+            padding: 4px 17px;
+            line-height: 1.9;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .lines::-webkit-scrollbar { width: 3px; }
+        .lines::-webkit-scrollbar-track { background: #010501; }
+        .lines::-webkit-scrollbar-thumb { background: var(--g); border-radius: 2px; }
+        
+        .cmd {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cmd:hover {
+            text-shadow: 0 0 9px var(--g);
+            color: #8aff4a;
+        }
+        
+        .granted {
+            margin: 13px;
+            height: 60px;
+            border: 2px solid #3d8e18;
+            display: flex;
+            align-items: center;
+            padding-left: 18px;
+            font-size: 20px;
+            text-shadow: 0 0 9px var(--g);
+        }
+        
+        .stat {
+            height: 34px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 0 14px;
+            font-size: 12px;
+        }
+        
+        .stat .name { flex: 1; }
+        .stat .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--g);
+            box-shadow: 0 0 9px var(--g);
+        }
+        
+        /* ============================================================
+           الخريطة
+           ============================================================ */
+        .map { height: 67%; position: relative; }
+        .mapbox { position: absolute; inset: 52px 10px 10px; }
+        #map {
+            height: 100%;
+            width: 100%;
+            filter: saturate(0.75) brightness(0.55) contrast(1.15);
+            border-radius: 4px;
+        }
+        
+        .leaflet-container { background: #010501; }
+        .leaflet-control { filter: invert(1) hue-rotate(80deg) saturate(2); }
+        
+        .mapOverlay {
+            position: absolute;
+            inset: 0;
+            z-index: 500;
+            pointer-events: none;
+            background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.18) 80%);
+            box-shadow: inset 0 0 45px rgba(0,0,0,0.7);
+        }
+        
+        .mapInfo {
+            position: absolute;
+            bottom: 5px;
+            left: 9px;
+            right: 9px;
+            z-index: 600;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #38871b;
+        }
+        
+        .modebar {
+            position: absolute;
+            top: 6px;
+            right: 7px;
+            z-index: 700;
+            display: flex;
+            gap: 5px;
+            pointer-events: auto;
+        }
+        
+        .modebar button {
+            font: inherit;
+            color: #5bdb27;
+            background: #020902;
+            border: 1px solid #276510;
+            padding: 5px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .modebar button.active {
+            background: #153e0b;
+            box-shadow: 0 0 8px rgba(90, 255, 20, 0.25);
+        }
+        
+        /* ============================================================
+           خريطة D10 — عناصر إضافية
+           ============================================================ */
+        .speech-bubble {
+            position: absolute;
+            z-index: 800;
+            color: #00ffc8;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 0 0 25px #00ffc8;
+            background: #020500ee;
+            border: 2px solid #00ffc888;
+            border-radius: 14px;
+            padding: 10px 22px;
+            pointer-events: none;
+            animation: speechFade 2s ease-out forwards;
+            max-width: 350px;
+            text-align: center;
+            font-family: var(--font-mono);
+            box-shadow: 0 0 40px #00ffc844;
+        }
+        
+        @keyframes speechFade {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-60px) scale(0.9); }
+        }
+        
+        .damage-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 450;
+            pointer-events: none;
+            background: radial-gradient(circle at 30% 40%, rgba(255,0,0,0.08) 0%, transparent 60%),
+                        radial-gradient(circle at 70% 60%, rgba(255,100,0,0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 50% 80%, rgba(200,50,0,0.05) 0%, transparent 40%);
+            mix-blend-mode: screen;
+        }
+        
+        .damage-overlay::after {
+            content: "⚡";
+            position: absolute;
+            top: 15%;
+            right: 10%;
+            font-size: 60px;
+            color: #ff0040;
+            opacity: 0.15;
+            animation: pulseDamage 3s infinite;
+        }
+        
+        @keyframes pulseDamage {
+            0%,100% { opacity: 0.1; transform: scale(1); }
+            50% { opacity: 0.25; transform: scale(1.3); }
+        }
+        
+        .glitch-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 300;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg,
+                transparent 0px,
+                rgba(255,0,0,0.02) 2px,
+                transparent 4px,
+                rgba(0,255,200,0.01) 6px,
+                transparent 8px
+            );
+            animation: glitch 0.5s infinite;
+        }
+        
+        @keyframes glitch {
+            0%,100% { opacity: 0.3; }
+            25% { opacity: 0.5; transform: translateX(2px); }
+            50% { opacity: 0.2; transform: translateX(-2px); }
+            75% { opacity: 0.4; transform: translateX(1px); }
+        }
+        
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+            background: #020702;
+            color: #5cff20;
+            border: 1px solid #276510;
+        }
+        .leaflet-popup-content { font: 11px var(--font-mono); line-height: 1.5; }
+        
+        /* ============================================================
+           CASH FLOW
+           ============================================================ */
+        .cash { height: 33%; position: relative; }
+        .cashValue {
+            font-size: clamp(26px, 3vw, 42px);
+            padding: 3px 20px;
+            text-shadow: 0 0 9px var(--g);
+        }
+        .growth { margin-left: 28px; color: var(--g); }
+        .chart {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 9px;
+            height: 88px;
+            display: flex;
+            align-items: flex-end;
+            gap: 7px;
+        }
+        .bar {
+            flex: 1;
+            background: linear-gradient(#75ff27, #1e650d);
+            min-width: 3px;
+            box-shadow: 0 0 8px rgba(90, 255, 20, 0.22);
+            border-radius: 2px 2px 0 0;
+        }
+        
+        /* ============================================================
+           CONTROL PANEL
+           ============================================================ */
+        .control { height: 38%; }
+        .controlRows { padding: 3px 18px; font-size: 12px; line-height: 2.1; }
+        .controlRows div { display: flex; }
+        .controlRows span:first-child { flex: 1; }
+        
+        /* ============================================================
+           REAL TIME FEED + COMMAND INPUT
+           ============================================================ */
+        .feed { height: 62%; }
+        .ticker { padding: 2px 17px; font-size: 12px; }
+        
+        .command-input-area {
+            padding: 8px 17px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .command-input-area input {
+            flex: 1;
+            min-width: 150px;
+            background: #020902;
+            border: 1px solid #276510;
+            color: var(--g);
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        .command-input-area input:focus {
+            border-color: var(--g);
+            box-shadow: 0 0 15px rgba(92, 255, 32, 0.1);
+        }
+        
+        .command-input-area input::placeholder {
+            color: #444;
+        }
+        
+        .command-input-area select {
+            background: #020902;
+            border: 1px solid #276510;
+            color: var(--g);
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .command-input-area select option {
+            background: #020902;
+        }
+        
+        .command-input-area .btn-send {
+            background: var(--g);
+            color: #000;
+            border: none;
+            padding: 8px 20px;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .command-input-area .btn-send:hover {
+            background: #8aff4a;
+            box-shadow: 0 0 20px rgba(92, 255, 32, 0.3);
+        }
+        
+        .command-input-area .btn-danger {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .command-input-area .btn-danger:hover {
+            background: #ff6666;
+            box-shadow: 0 0 20px rgba(255, 57, 57, 0.3);
+        }
+        
+        .attackList {
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .attackList::-webkit-scrollbar { width: 3px; }
+        .attackList::-webkit-scrollbar-track { background: #010501; }
+        .attackList::-webkit-scrollbar-thumb { background: var(--g); border-radius: 2px; }
+        
+        .attackItem {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #103d09;
+            padding: 3px 0;
+            font-size: 11px;
+        }
+        .attackItem .type { color: #ff5656; }
+        .attackItem .target { color: #5fd52a; }
+        .attackItem .success { color: var(--g); }
+        .attackItem .error { color: var(--red); }
+        
+        /* ============================================================
+           القسم السفلي
+           ============================================================ */
+        .bottom {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 45px;
+            height: 183px;
+            z-index: 5;
+            display: grid;
+            grid-template-columns: 25% 25% 25% 25%;
+            gap: 9px;
+        }
+        
+        .bottomPanel {
+            border: 1px solid var(--line);
+            background: var(--panel);
+            overflow: hidden;
+        }
+        
+        .big {
+            font-size: 40px;
+            padding: 2px 28px;
+            color: var(--g);
+        }
+        .small {
+            padding: 0 28px;
+            font-size: 12px;
+            color: #449d20;
+        }
+        
+        .donutArea {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 9px;
+        }
+        .donut {
+            width: 82px;
+            height: 82px;
+            border-radius: 50%;
+            background: conic-gradient(#57dd20 0 48%, #3ba818 48% 70%, #2f7d13 70% 82%, #276511 82% 91%, #1a4d0c 91%);
+            position: relative;
+        }
+        .donut::after {
+            content: "";
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            left: 16px;
+            top: 16px;
+            border-radius: 50%;
+            background: #030703;
+        }
+        .donut b {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            z-index: 2;
+            font-size: 18px;
+            color: var(--g);
+        }
+        
+        .legend { font-size: 10px; line-height: 1.7; }
+        .legend i {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            background: #4acb1d;
+            margin-right: 4px;
+            border-radius: 2px;
+        }
+        
+        .progress {
+            margin: 20px 25px;
+            height: 9px;
+            border: 1px solid #276510;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress i {
+            display: block;
+            height: 100%;
+            width: 93%;
+            background: #55d921;
+            border-radius: 3px;
+        }
+        
+        .logs {
+            padding: 4px 15px;
+            font-size: 10px;
+            line-height: 1.75;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .logs::-webkit-scrollbar { width: 3px; }
+        .logs::-webkit-scrollbar-track { background: #010501; }
+        .logs::-webkit-scrollbar-thumb { background: var(--g); border-radius: 2px; }
+        
+        /* ============================================================
+           الفوتر
+           ============================================================ */
+        .footer {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 5px;
+            height: 29px;
+            border: 1px solid #174b0b;
+            display: flex;
+            align-items: center;
+            padding: 0 13px;
+            font-size: 11px;
+            color: #4aaa24;
+            z-index: 10;
+        }
+        .footer .p {
+            margin-left: auto;
+            width: 26%;
+            height: 7px;
+            background: #153a0c;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .footer .p i {
+            display: block;
+            height: 100%;
+            width: 100%;
+            background: #55d91f;
+        }
+        
+        /* ============================================================
+           استجابة للهواتف
+           ============================================================ */
+        @media (max-width: 768px) {
+            .app {
+                width: 100%;
+                height: 100%;
+                padding: 6px;
+                position: relative;
+                left: 0;
+                top: 0;
+                transform: none !important;
+            }
+            .terminal { padding: 10px; }
+            .header { height: 60px; }
+            .logo { font-size: 18px; }
+            .user { font-size: 10px; }
+            .permission { display: none; }
+            .win span { width: 28px; height: 24px; font-size: 14px; }
+            .layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                height: auto;
+                gap: 6px;
+            }
+            .col { gap: 6px; }
+            .command { height: auto; }
+            .overview { height: auto; }
+            .map { height: 300px; }
+            .mapbox { inset: 40px 5px 5px; }
+            .cash { height: 150px; }
+            .control { height: auto; }
+            .feed { height: auto; }
+            .bottom {
+                position: relative;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: auto;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+                padding: 6px 0;
+            }
+            .bottomPanel { padding: 5px; }
+            .big { font-size: 24px; padding: 2px 14px; }
+            .small { padding: 0 14px; font-size: 10px; }
+            .donut { width: 60px; height: 60px; }
+            .donut::after { width: 36px; height: 36px; left: 12px; top: 12px; }
+            .donut b { font-size: 14px; }
+            .footer {
+                position: relative;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                margin-top: 10px;
+                font-size: 9px;
+                height: 24px;
+                padding: 0 8px;
+            }
+            .modebar { position: relative; top: auto; right: auto; margin-top: 5px; }
+            .modebar button { font-size: 10px; padding: 3px 6px; }
+            .command-input-area { flex-direction: column; }
+            .command-input-area input { width: 100%; }
+            .command-input-area select { width: 100%; }
+            .command-input-area .btn-send { width: 100%; }
+            .command-input-area .btn-danger { width: 100%; }
+        }
+        
+        @media (max-width: 480px) {
+            .bottom { grid-template-columns: 1fr 1fr; }
+            .bottomPanel { padding: 4px; }
+            .big { font-size: 18px; padding: 2px 10px; }
+            .small { padding: 0 10px; font-size: 9px; }
+            .stat { font-size: 10px; padding: 0 8px; height: 28px; }
+            .lines { font-size: 11px; padding: 2px 10px; }
+            .granted { font-size: 14px; height: 40px; margin: 8px; padding-left: 12px; }
+            .title { font-size: 12px; padding: 8px 10px 6px; }
+            .controlRows { font-size: 10px; padding: 2px 10px; }
+            .ticker { font-size: 10px; padding: 2px 10px; }
+            .cashValue { font-size: 20px; }
+            .growth { font-size: 12px; }
+            .chart { height: 50px; gap: 4px; }
+            .bar { min-width: 2px; }
+            .attackItem { font-size: 9px; padding: 2px 0; }
+            .logs { font-size: 8px; padding: 2px 8px; max-height: 60px; }
+            .map { height: 200px; }
+            .donutArea { padding: 5px; }
+            .legend { font-size: 8px; }
+            .progress { margin: 10px 15px; height: 6px; }
+        }
+        
+        /* ============================================================
+           تأثيرات إضافية
+           ============================================================ */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(92, 255, 32, 0.01) 2px,
+                rgba(92, 255, 32, 0.01) 4px
+            );
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .status-badge.online { background: rgba(92, 255, 32, 0.2); color: var(--g); border: 1px solid var(--g); }
+        .status-badge.offline { background: rgba(255, 57, 57, 0.2); color: var(--red); border: 1px solid var(--red); }
+        .status-badge.waiting { background: rgba(255, 196, 46, 0.2); color: var(--amber); border: 1px solid var(--amber); }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    شاشة التحميل
+    ============================================================ -->
+    <div class="boot-screen" id="bootScreen">
+        <div class="title">OMEGA <span>SPECTRE</span></div>
+        <div class="sub">D10 · GODFALL · INITIALIZING</div>
+        <div class="loader"><div class="bar"></div></div>
+        <div class="version">v4.0 · 2099 · 🔱</div>
+    </div>
+
+    <!-- ============================================================
+    تأثير المسح الضوئي
+    ============================================================ -->
+    <div class="scanline"></div>
+
+    <!-- ============================================================
+    التطبيق الرئيسي
+    ============================================================ -->
+    <div class="app" id="app">
+        <div class="terminal">
+
+            <!-- ============================================================
+            الشريط العلوي
+            ============================================================ -->
+            <header class="header">
+                <div class="logo">🌍 OMEGA <span>SPECTRE</span> // D10</div>
+                <div class="user">USER: root@success</div>
+                <div class="permission">⚠ PERMISSION: unrestricted</div>
+                <div class="win"><span>−</span><span>□</span><span>×</span></div>
+            </header>
+
+            <!-- ============================================================
+            التخطيط الرئيسي
+            ============================================================ -->
+            <main class="layout">
+
+                <!-- ============================================================
+                العمود الأيسر — COMMAND CENTER
+                ============================================================ -->
+                <section class="col">
+                    <div class="panel command">
+                        <div class="title">⚔️ OMEGA COMMAND CENTER</div>
+                        <div class="lines" id="commandList">
+                            <div class="cmd" onclick="sendOmegaCommand('exec quantum_core/q_engine.py --attack')">&gt;&gt; ⚛️ المحرك الكمومي (q_engine)</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec ai_autopilot/attack_planner.py --target=all')">&gt;&gt; 🎯 مخطط الهجوم (attack_planner)</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec zero_day_vault/cve_2025_001.py --all')">&gt;&gt; 📱 Zero-Click Android</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec zero_day_vault/cve_2025_002.py --all')">&gt;&gt; 📱 Zero-Click iOS</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec zero_day_vault/cve_2025_003.py --all')">&gt;&gt; 💻 Zero-Click Windows</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec military_jamming/freq_jammer.py --global')">&gt;&gt; 📡 تشويش ترددات عالمي</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec military_jamming/radar_blinder.py --global')">&gt;&gt; 🛰️ تعمية رادارات</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec god_radar/radar_core.py --scan=global')">&gt;&gt; 🔍 رادار إلهي شامل</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec full_control/satellite_hack.py --all')">&gt;&gt; 🛰️ اختراق الأقمار الصناعية</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec internet_god/dns_controller.py --hijack')">&gt;&gt; 🌐 السيطرة على DNS العالمي</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec global_domination/global_scanner.py --all')">&gt;&gt; 🌍 مسح جميع الشركات</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec aerial_supremacy/plane_hijacker.py --all')">&gt;&gt; ✈️ اختطاف الطائرات</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec annihilation_arsenal/total_oblivion.py')">&gt;&gt; 💀 إبادة كاملة (Total Oblivion)</div>
+                            <div class="cmd" onclick="sendOmegaCommand('exec all')">&gt;&gt; 🔥 تشغيل جميع الملفات دفعة واحدة</div>
+                            <div class="cmd" onclick="sendOmegaCommand('dump all')">&gt;&gt; 📥 سحب جميع البيانات</div>
+                            <div class="cmd" onclick="sendOmegaCommand('status')">&gt;&gt; 📊 عرض الحالة العامة</div>
+                        </div>
+                        <div class="granted">☠ D10 ACCESS GRANTED ☠</div>
+                    </div>
+
+                    <div class="panel overview">
+                        <div class="title">📊 SYSTEM OVERVIEW</div>
+                        <div class="stat"><span>◫</span><span class="name">GLOBAL STATUS</span><b id="globalStatus">ACTIVE</b><i class="dot"></i></div>
+                        <div class="stat"><span>◈</span><span class="name">CYBER THREATS</span><b id="threatCount">247</b><i class="dot"></i></div>
+                        <div class="stat"><span>⌁</span><span class="name">WAR ZONES</span><b id="warZonesCount">18</b><i class="dot"></i></div>
+                        <div class="stat"><span>⬢</span><span class="name">ATTACKS/SEC</span><b>14</b><i class="dot"></i></div>
+                        <div class="stat"><span>◎</span><span class="name">ACTIVE EVENTS</span><b id="eventCount">142</b><i class="dot"></i></div>
+                        <div class="stat"><span>📁</span><span class="name">FILES CONTROLLED</span><b id="filesCount">159</b><i class="dot"></i></div>
+                    </div>
+                </section>
+
+                <!-- ============================================================
+                العمود الأوسط — الخريطة
+                ============================================================ -->
+                <section class="col">
+                    <div class="panel map">
+                        <div class="title">🌍 GLOBAL THREAT MAP</div>
+                        <div class="modebar">
+                            <button id="satBtn" class="active">SATELLITE</button>
+                            <button id="stdBtn">DARK</button>
+                            <button id="pauseBtn">⏸️ PAUSE</button>
+                        </div>
+                        <div class="mapbox">
+                            <div id="map"></div>
+                            <div class="damage-overlay"></div>
+                            <div class="glitch-overlay"></div>
+                            <div class="mapOverlay"></div>
+                            <div class="mapInfo">
+                                <span>🛰️ D10: <span id="clock">--:--:--</span> UTC</span>
+                                <span>⚡ WAR SIMULATION ACTIVE</span>
+                                <span>📡 OMEGA SPECTRE ONLINE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel cash">
+                        <div class="title">💰 GLOBAL CASH FLOW</div>
+                        <span class="cashValue">$98,450,670</span>
+                        <span class="growth">+27.8%</span>
+                        <div class="chart" id="chart"></div>
+                    </div>
+                </section>
+
+                <!-- ============================================================
+                العمود الأيمن — CONTROL + FEED
+                ============================================================ -->
+                <section class="col">
+                    <div class="panel control">
+                        <div class="title">🎛️ OMEGA CONTROL PANEL</div>
+                        <div class="controlRows">
+                            <div><span>THREAT MONITOR</span><b>› ACTIVE</b></div>
+                            <div><span>AI PREDICT</span><b>› ACTIVE</b></div>
+                            <div><span>WAR FEED</span><b>› LIVE</b></div>
+                            <div><span>SATELLITE VIEW</span><b>› ENABLED</b></div>
+                            <div><span>D10 MODE</span><b>› ON</b></div>
+                            <div><span>OMEGA FILES</span><b>› 159 LOADED</b></div>
+                        </div>
+                    </div>
+
+                    <div class="panel feed">
+                        <div class="title">📡 REAL TIME CYBER FEED</div>
+                        <div class="ticker">
+                            <!-- حقل إدخال الأوامر -->
+                            <div class="command-input-area">
+                                <input type="text" id="commandInput" placeholder="أمر مخصص... (مثل: exec quantum_core/q_engine.py)">
+                                <select id="targetSelect">
+                                    <option value="all">🌐 جميع الأجهزة</option>
+                                </select>
+                                <button class="btn-send" onclick="sendCustomCommand()">▶ إرسال</button>
+                                <button class="btn-danger" onclick="sendOmegaCommand('destroy all')">💀 إبادة</button>
+                            </div>
+                            <!-- قائمة الهجمات -->
+                            <div class="attackList" id="attackList"></div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- ============================================================
+            القسم السفلي
+            ============================================================ -->
+            <section class="bottom">
+
+                <div class="bottomPanel">
+                    <div class="title">🎯 ATTACK TYPES</div>
+                    <div class="donutArea">
+                        <div class="donut"><b id="attackTotal">24</b></div>
+                        <div class="legend">
+                            <div><i></i>DDoS 22%</div>
+                            <div><i></i>MALWARE 18%</div>
+                            <div><i></i>PHISHING 16%</div>
+                            <div><i></i>BOTNET 14%</div>
+                            <div><i></i>OTHER 30%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottomPanel">
+                    <div class="title">🌐 THREAT NODES</div>
+                    <div class="big" id="nodes">47</div>
+                    <div class="small">ACTIVE NODES</div>
+                    <div class="small" style="margin-top:18px">⚡ GLOBAL TELEMETRY</div>
+                </div>
+
+                <div class="bottomPanel">
+                    <div class="title">💎 ASSETS MONITORED</div>
+                    <div class="big">$198.6M</div>
+                    <div class="small">MONITORED PORTFOLIO</div>
+                    <div class="progress"><i></i></div>
+                </div>
+
+                <div class="bottomPanel">
+                    <div class="title">📜 SYSTEM LOG</div>
+                    <div class="logs" id="logs"></div>
+                </div>
+
+            </section>
+
+            <!-- ============================================================
+            الفوتر
+            ============================================================ -->
+            <footer class="footer">
+                <span>⚡ OMEGA SPECTRE GODFALL // D10 — 159 ملفاً تحت سيطرتك</span>
+                <div class="p"><i></i></div>
+                <span style="margin-left:9px">100%</span>
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- ============================================================
+    مكتبات خارجية
+    ============================================================ -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- ============================================================
+    جافا سكريبت — التشغيل الكامل مع التحكم في OMEGA
+    ============================================================ -->
+    <script>
+        // ============================================================
+        // إخفاء شاشة التحميل
+        // ============================================================
+        setTimeout(() => {
+            document.getElementById('bootScreen').classList.add('hidden');
+        }, 2800);
+
+        // ============================================================
+        // تكييف الحجم
+        // ============================================================
+        (function() {
+            const app = document.querySelector('.app');
+            function fitDashboard() {
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+                const scale = Math.min(vw / 1536, vh / 1024);
+                if (vw > 768) {
+                    app.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                } else {
+                    app.style.transform = 'none';
+                }
+            }
+            window.addEventListener('resize', fitDashboard, { passive: true });
+            window.addEventListener('orientationchange', fitDashboard, { passive: true });
+            fitDashboard();
+        })();
+
+        // ============================================================
+        // الساعة
+        // ============================================================
+        function tick() {
+            const d = new Date();
+            document.getElementById('clock').textContent = d.toLocaleTimeString('en-GB', { hour12: false });
+        }
+        tick();
+        setInterval(tick, 1000);
+
+        // ============================================================
+        // الخريطة
+        // ============================================================
+        const map = L.map('map', { zoomControl: false, attributionControl: false })
+            .setView([22, 20], 2);
+
+        const satellite = L.tileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 }
+        ).addTo(map);
+
+        const dark = L.tileLayer(
+            'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19 }
+        );
+
+        document.getElementById('satBtn').onclick = function() {
+            if (!map.hasLayer(satellite)) satellite.addTo(map);
+            if (map.hasLayer(dark)) map.removeLayer(dark);
+            this.classList.add('active');
+            document.getElementById('stdBtn').classList.remove('active');
+        };
+
+        document.getElementById('stdBtn').onclick = function() {
+            if (!map.hasLayer(dark)) dark.addTo(map);
+            if (map.hasLayer(satellite)) map.removeLayer(satellite);
+            this.classList.add('active');
+            document.getElementById('satBtn').classList.remove('active');
+        };
+
+        // ============================================================
+        // المدن والمواقع
+        // ============================================================
+        const cities = [
+            ['New York', 40.7128, -74.0060],
+            ['London', 51.5074, -0.1278],
+            ['Cairo', 30.0444, 31.2357],
+            ['Dubai', 25.2048, 55.2708],
+            ['Singapore', 1.3521, 103.8198],
+            ['Tokyo', 35.6762, 139.6503],
+            ['Sydney', -33.8688, 151.2093],
+            ['São Paulo', -23.5505, -46.6333],
+            ['Mumbai', 19.0760, 72.8777],
+            ['Frankfurt', 50.1109, 8.6821],
+            ['Johannesburg', -26.2041, 28.0473],
+            ['Los Angeles', 34.0522, -118.2437],
+            ['Moscow', 55.7558, 37.6173],
+            ['Beijing', 39.9042, 116.4074],
+            ['Mexico City', 19.4326, -99.1332],
+            ['Cape Town', -33.9249, 18.4241],
+            ['Berlin', 52.5200, 13.4050],
+            ['Paris', 48.8566, 2.3522],
+            ['Rome', 41.9028, 12.4964],
+            ['Madrid', 40.4168, -3.7038],
+            ['Istanbul', 41.0082, 28.9784],
+            ['Tehran', 35.6892, 51.3890],
+            ['Baghdad', 33.3152, 44.3661],
+            ['Riyadh', 24.7136, 46.6753],
+            ['Kiev', 50.4501, 30.5234],
+            ['Warsaw', 52.2297, 21.0122],
+            ['Athens', 37.9838, 23.7275],
+            ['Amsterdam', 52.3676, 4.9041],
+            ['Brussels', 50.8503, 4.3517],
+            ['Vienna', 48.2082, 16.3738],
+            ['Prague', 50.0755, 14.4378],
+            ['Budapest', 47.4979, 19.0402],
+            ['Bucharest', 44.4268, 26.1025],
+            ['Sofia', 42.6977, 23.3219],
+            ['Belgrade', 44.7866, 20.4489],
+            ['Zagreb', 45.8150, 15.9819],
+            ['Stockholm', 59.3293, 18.0686],
+            ['Oslo', 59.9139, 10.7522],
+            ['Helsinki', 60.1699, 24.9384],
+            ['Copenhagen', 55.6761, 12.5683],
+            ['Lisbon', 38.7223, -9.1393],
+            ['Dublin', 53.3498, -6.2603],
+            ['Edinburgh', 55.9533, -3.1883],
+            ['Manchester', 53.4808, -2.2426],
+            ['Birmingham', 52.4862, -1.8904],
+            ['Leeds', 53.8008, -1.5491],
+            ['Glasgow', 55.8642, -4.2518],
+            ['Liverpool', 53.4084, -2.9916],
+            ['Bristol', 51.4545, -2.5879],
+            ['Sheffield', 53.3811, -1.4701],
+            ['Newcastle', 54.9783, -1.6178],
+            ['Nottingham', 52.9548, -1.1581],
+            ['Southampton', 50.9097, -1.4044],
+            ['Portsmouth', 50.8198, -1.0880],
+            ['Brighton', 50.8225, -0.1372],
+            ['Norwich', 52.6309, 1.2974],
+            ['Leicester', 52.6369, -1.1398],
+            ['Coventry', 52.4068, -1.5197],
+            ['Cardiff', 51.4816, -3.1791],
+            ['Swansea', 51.6214, -3.9432],
+            ['Belfast', 54.5973, -5.9301],
+            ['Derry', 54.9975, -7.3097],
+            ['Aberdeen', 57.1497, -2.0943],
+            ['Dundee', 56.4620, -2.9707],
+            ['Inverness', 57.4778, -4.2247],
+            ['Perth', 56.3946, -3.4312],
+            ['Stirling', 56.1165, -3.9369],
+            ['Dover', 51.1279, 1.3134],
+            ['Calais', 50.9519, 1.8536],
+            ['Dunkirk', 51.0344, 2.3768],
+            ['Ostend', 51.2155, 2.9286],
+            ['Zeebrugge', 51.3290, 3.2010],
+            ['Rotterdam', 51.9225, 4.4792],
+            ['Antwerp', 51.2194, 4.4025],
+            ['Ghent', 51.0543, 3.7174],
+            ['Bruges', 51.2093, 3.2247],
+            ['Hamburg', 53.5511, 9.9937],
+            ['Bremen', 53.0793, 8.8017],
+            ['Hanover', 52.3705, 9.7332],
+            ['Düsseldorf', 51.2277, 6.7735],
+            ['Cologne', 50.9375, 6.9603],
+            ['Stuttgart', 48.7758, 9.1829],
+            ['Munich', 48.1351, 11.5820],
+            ['Nuremberg', 49.4521, 11.0767],
+            ['Leipzig', 51.3397, 12.3731],
+            ['Dresden', 51.0504, 13.7384],
+            ['Chemnitz', 50.8278, 12.9214],
+            ['Magdeburg', 52.1205, 11.6276],
+            ['Halle', 51.4814, 11.9691],
+            ['Rostock', 54.0887, 12.1405],
+            ['Kiel', 54.3233, 10.1228],
+            ['Lübeck', 53.8655, 10.6866],
+            ['Flensburg', 54.7843, 9.4396],
+            ['Odense', 55.4038, 10.4024],
+            ['Aarhus', 56.1496, 10.2104],
+            ['Gothenburg', 57.7089, 11.9746],
+            ['Malmö', 55.6050, 13.0038],
+            ['Lund', 55.7047, 13.1936],
+            ['Uppsala', 59.8586, 17.6389],
+            ['Västerås', 59.6099, 16.5448],
+            ['Örebro', 59.2741, 15.2066],
+            ['Linköping', 58.4108, 15.6214],
+            ['Norrköping', 58.5877, 16.1924],
+            ['Jönköping', 57.7815, 14.1562],
+            ['Helsingborg', 56.0465, 12.6945],
+            ['Luleå', 65.5848, 22.1547],
+            ['Umeå', 63.8258, 20.2630],
+            ['Sundsvall', 62.3904, 17.3064],
+            ['Gävle', 60.6749, 17.1413],
+            ['Karlstad', 59.3793, 13.5036],
+            ['Tampere', 61.4978, 23.7610],
+            ['Turku', 60.4518, 22.2666],
+            ['Oulu', 65.0121, 25.4651],
+            ['Rovaniemi', 66.5039, 25.7294],
+            ['Bergen', 60.3913, 5.3221],
+            ['Trondheim', 63.4305, 10.3951],
+            ['Stavanger', 58.9690, 5.7331],
+            ['Kristiansand', 58.1467, 7.9956],
+            ['Drammen', 59.7389, 10.2045],
+            ['Sandnes', 58.8524, 5.7352],
+            ['Bodø', 67.2826, 14.3751],
+            ['Tromsø', 69.6492, 18.9553]
+        ];
+
+        // ============================================================
+        // مناطق الحرب
+        // ============================================================
+        const warZones = [
+            ['Ukraine War Zone', 48.3794, 31.1656, '🔥'],
+            ['Gaza Strip', 31.4460, 34.4462, '💥'],
+            ['West Bank', 31.9522, 35.2332, '💥'],
+            ['Syria', 34.8021, 38.9968, '🔥'],
+            ['Yemen', 15.5527, 48.5164, '🔥'],
+            ['Sudan', 15.5007, 32.5599, '💥'],
+            ['Ethiopia', 9.1450, 40.4897, '🔥'],
+            ['Somalia', 5.1521, 46.1996, '💥'],
+            ['Myanmar', 21.9162, 95.9560, '🔥'],
+            ['Colombia', 4.5709, -74.2973, '💥'],
+            ['DR Congo', -4.0383, 21.7587, '🔥'],
+            ['Sahel Region', 17.5707, -3.9962, '💥'],
+            ['Haiti', 18.9712, -72.2852, '🔥'],
+            ['Nagorno-Karabakh', 39.8300, 46.7200, '💥'],
+            ['South China Sea', 12.0000, 115.0000, '⚠️'],
+            ['Taiwan Strait', 24.5000, 120.0000, '⚠️'],
+            ['Korean Peninsula', 38.5000, 127.5000, '⚠️'],
+            ['Kashmir', 34.0000, 75.0000, '💥']
+        ];
+
+        // ============================================================
+        // أنواع الهجمات السيبرانية
+        // ============================================================
+        const cyberAttacks = [
+            'Ransomware: LockBit', 'Ransomware: BlackCat', 'Ransomware: Clop',
+            'Ransomware: REvil', 'Ransomware: DarkSide', 'Ransomware: Hive',
+            'Ransomware: Conti', 'Ransomware: Petya', 'Ransomware: WannaCry',
+            'APT: APT29 (Cozy Bear)', 'APT: APT28 (Fancy Bear)',
+            'APT: Lazarus Group', 'APT: APT41', 'APT: OilRig', 'APT: Sandworm',
+            'Malware: TrickBot', 'Malware: Emotet', 'Malware: Dridex',
+            'Malware: QakBot', 'Malware: IcedID', 'Malware: BazarLoader',
+            'DDoS: Mirai', 'DDoS: Killnet', 'DDoS: Anonymous Sudan',
+            'Phishing: BEC Scam', 'Phishing: CEO Fraud',
+            'Supply Chain: SolarWinds', 'Supply Chain: Kaseya',
+            'Supply Chain: MOVEit', 'Zero-Day: Log4Shell',
+            'Zero-Day: ProxyShell', 'Zero-Day: PrintNightmare',
+            'Insider: Data Leak', 'IoT: Botnet Attack',
+            'Cryptojacking: CoinHive', 'XSS Attack', 'SQL Injection',
+            'C2 Beacon', 'Data Exfiltration', 'Credential Theft',
+            'DNS Hijacking', 'MITM Attack', 'Phishing Campaign',
+            'Botnet Activity', 'Port Scanning', 'Exploit Attempt'
+        ];
+
+        // ============================================================
+        // مستويات الخطورة
+        // ============================================================
+        const severityTypes = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
+        const severityColors = {
+            LOW: '#62dc2a',
+            MEDIUM: '#ffc42e',
+            HIGH: '#ff7b27',
+            CRITICAL: '#ff3030'
+        };
+
+        // ============================================================
+        // عبارات التحدث
+        // ============================================================
+        const speechPhrases = [
+            '⚠️ OMEGA: Cyber attack detected!',
+            '🛰️ OMEGA: Tracking global threats...',
+            '🔴 OMEGA: Critical vulnerability found!',
+            '🛡️ OMEGA: Defense grid online!',
+            '💀 OMEGA: APT group identified!',
+            '📡 OMEGA: Monitoring war zones...',
+            '🔥 OMEGA: Ransomware wave incoming!',
+            '🎯 OMEGA: Zero-Day exploit in progress!',
+            '⚡ OMEGA: Countermeasures deployed!',
+            '🌊 OMEGA: DDoS attack mitigated!',
+            '🔒 OMEGA: Security breach contained!',
+            '🔄 OMEGA: Threat neutralized!',
+            '💥 OMEGA: War zone activity detected!',
+            '📊 OMEGA: Global threat matrix updated!',
+            '🛰️ OMEGA: Satellite link stable!',
+            '⚔️ OMEGA: Cyber warfare active!',
+            '🎯 OMEGA: Targeted attack detected!',
+            '🔐 OMEGA: Encryption bypassed!',
+            '💀 OMEGA: Botnet cluster identified!',
+            '🌍 OMEGA: All systems monitored!'
+        ];
+
+        // ============================================================
+        // الحالة
+        // ============================================================
+        let running = true;
+        let eventCount = 0;
+        let markers = [];
+        let links = [];
+        let warMarkers = [];
+        let deviceList = [];
+
+        // ============================================================
+        // دوال الأيقونات
+        // ============================================================
+        function icon(color = '#64ff22', size = 9) {
+            return L.divIcon({
+                className: '',
+                html: `<div style="
+                    width:${size}px;height:${size}px;border-radius:50%;
+                    background:${color};
+                    box-shadow:0 0 8px ${color},0 0 22px ${color};
+                "></div>`,
+                iconSize: [size, size],
+                iconAnchor: [size / 2, size / 2]
+            });
+        }
+
+        // ============================================================
+        // إضافة مناطق الحرب
+        // ============================================================
+        function addWarZones() {
+            warZones.forEach((wz) => {
+                const marker = L.marker([wz[1], wz[2]], {
+                    icon: L.divIcon({
+                        className: '',
+                        html: `<div style="
+                            width:24px;height:24px;
+                            font-size:20px;
+                            text-align:center;
+                            line-height:24px;
+                            filter:drop-shadow(0 0 20px #ff0040);
+                            animation:warpulse 1.5s infinite;
+                        ">${wz[3]}</div>`,
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 12]
+                    })
+                }).addTo(map);
+                marker.bindPopup(`<b>🔥 WAR ZONE</b><br>${wz[0]}<br>⚠️ Active conflict`);
+                warMarkers.push(marker);
+            });
+        }
+        addWarZones();
+
+        // ============================================================
+        // إنشاء حادثة (هجوم سيبراني)
+        // ============================================================
+        function makeIncident() {
+            const source = cities[Math.floor(Math.random() * cities.length)];
+            let target = cities[Math.floor(Math.random() * cities.length)];
+            while (target === source) target = cities[Math.floor(Math.random() * cities.length)];
+
+            const attack = cyberAttacks[Math.floor(Math.random() * cyberAttacks.length)];
+            const severity = severityTypes[Math.floor(Math.random() * severityTypes.length)];
+            const color = severityColors[severity];
+
+            const m1 = L.marker([source[1], source[2]], { icon: icon(color) })
+                .addTo(map)
+                .bindPopup(`<b>⚡ CYBER ATTACK</b><br>${attack}<br>SOURCE: ${source[0]}<br>TARGET: ${target[0]}<br>SEVERITY: ${severity}`);
+
+            const m2 = L.marker([target[1], target[2]], { icon: icon('#ff3c3c', 12) }).addTo(map);
+
+            const line = L.polyline(
+                [
+                    [source[1], source[2]],
+                    [target[1], target[2]]
+                ], { color: color, weight: 2, opacity: 0.7, dashArray: '6 8' }
+            ).addTo(map);
+
+            markers.push(m1, m2);
+            links.push(line);
+
+            while (markers.length > 60) {
+                map.removeLayer(markers.shift());
+                map.removeLayer(markers.shift());
+                map.removeLayer(links.shift());
+            }
+
+            return { attack, source: source[0], target: target[0], severity };
+        }
+
+        // ============================================================
+        // إضافة إلى الفيد
+        // ============================================================
+        const attackList = document.getElementById('attackList');
+
+        function addFeed() {
+            if (!running) return;
+            const e = makeIncident();
+            const row = document.createElement('div');
+            row.className = 'attackItem';
+            const emoji = e.severity === 'CRITICAL' ? '🔴' :
+                e.severity === 'HIGH' ? '🟠' :
+                e.severity === 'MEDIUM' ? '🟡' : '🟢';
+            row.innerHTML =
+                `<span class="type">${emoji} ${e.attack}</span><span>${e.source} → ${e.target}</span><span class="target">${e.severity}</span>`;
+            attackList.prepend(row);
+            while (attackList.children.length > 6) attackList.lastChild.remove();
+
+            eventCount++;
+            document.getElementById('eventCount').textContent = 100 + eventCount;
+            document.getElementById('threatCount').textContent = 200 + Math.floor(Math.random() * 80);
+            document.getElementById('nodes').textContent = 30 + Math.floor(Math.random() * 30);
+            document.getElementById('attackTotal').textContent = 20 + Math.floor(Math.random() * 20);
+        }
+
+        // ============================================================
+        // فقاعة الكلام
+        // ============================================================
+        function speak() {
+            if (!running) return;
+            const phrase = speechPhrases[Math.floor(Math.random() * speechPhrases.length)];
+            const mapBox = document.querySelector('.mapbox');
+            if (!mapBox) return;
+
+            const rect = mapBox.getBoundingClientRect();
+            const x = 30 + Math.random() * (rect.width - 200);
+            const y = 60 + Math.random() * (rect.height - 120);
+
+            const bubble = document.createElement('div');
+            bubble.className = 'speech-bubble';
+            bubble.textContent = phrase;
+            bubble.style.left = x + 'px';
+            bubble.style.top = y + 'px';
+            mapBox.appendChild(bubble);
+            setTimeout(() => bubble.remove(), 2000);
+        }
+
+        // ============================================================
+        // المؤقتات
+        // ============================================================
+        for (let i = 0; i < 5; i++) addFeed();
+        setInterval(addFeed, 900);
+        setInterval(speak, 1200);
+
+        // ============================================================
+        // زر الإيقاف المؤقت
+        // ============================================================
+        document.getElementById('pauseBtn').onclick = function() {
+            running = !running;
+            this.textContent = running ? '⏸️ PAUSE' : '▶️ RESUME';
+        };
+
+        // ============================================================
+        // الرسم البياني
+        // ============================================================
+        const chart = document.getElementById('chart');
+        [18, 31, 44, 26, 19, 27, 46, 25, 42, 26, 58, 30, 42, 72, 82, 118, 83, 62, 91, 115, 155].forEach(v => {
+            const b = document.createElement('div');
+            b.className = 'bar';
+            b.style.height = v + 'px';
+            chart.appendChild(b);
+        });
+
+        // ============================================================
+        // السجلات
+        // ============================================================
+        const logs = document.getElementById('logs');
+        const logMessages = [
+            '⚡ OMEGA: System initialized',
+            '🛰️ OMEGA: Satellite sync complete',
+            '🌍 OMEGA: War zones mapped',
+            '🔥 OMEGA: Cyber attacks detected',
+            '📡 OMEGA: Telemetry active',
+            '🛡️ OMEGA: Defense grid online',
+            '🎯 OMEGA: D10 Mode activated',
+            '💀 OMEGA: All 159 modules ready'
+        ];
+        let li = 0;
+
+        function log() {
+            const t = new Date().toLocaleTimeString('en-GB', { hour12: false });
+            const div = document.createElement('div');
+            div.textContent = `[${t}] ${logMessages[li++ % logMessages.length]}`;
+            logs.appendChild(div);
+            if (logs.children.length > 6) logs.firstChild.remove();
+        }
+        for (let i = 0; i < 6; i++) log();
+        setInterval(log, 2500);
+
+        // ============================================================
+        // إرسال أوامر OMEGA إلى الخادم
+        // ============================================================
+        async function sendOmegaCommand(cmd) {
+            const logArea = document.getElementById('logs');
+            const attackArea = document.getElementById('attackList');
+            const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
+
+            // إضافة إلى السجل
+            logArea.innerHTML += `<div style="color:#5fd52a;">[${time}] 🚀 Executing: ${cmd}</div>`;
+            logArea.scrollTop = logArea.scrollHeight;
+
+            // إضافة إلى الفيد
+            const row = document.createElement('div');
+            row.className = 'attackItem';
+            row.innerHTML = `<span class="type">🚀 OMEGA CMD</span><span>${cmd}</span><span class="success">SENT</span>`;
+            attackArea.prepend(row);
+            if (attackArea.children.length > 8) attackArea.lastChild.remove();
+
+            try {
+                const response = await fetch('/send_command', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ device_id: 'all', command: cmd })
+                });
+                const data = await response.json();
+
+                const status = data.status === 'broadcasted' || data.status === 'sent' ? '✅' : '❌';
+                const msg = data.status === 'broadcasted' || data.status === 'sent' ?
+                    `تم الإرسال إلى ${data.devices || 1} جهاز` :
+                    data.error || 'فشل الإرسال';
+
+                logArea.innerHTML += `<div style="color:#5cff20;">[${time}] ${status} ${msg}</div>`;
+                logArea.scrollTop = logArea.scrollHeight;
+
+                // تحديث الإحصائيات
+                fetchStats();
+
+            } catch (e) {
+                logArea.innerHTML += `<div style="color:#ff3939;">[${time}] ❌ خطأ في الاتصال: ${e.message}</div>`;
+                logArea.scrollTop = logArea.scrollHeight;
+            }
+        }
+
+        // ============================================================
+        // إرسال أمر مخصص من حقل الإدخال
+        // ============================================================
+        async function sendCustomCommand() {
+            const input = document.getElementById('commandInput');
+            const target = document.getElementById('targetSelect').value;
+            const cmd = input.value.trim();
+            if (!cmd) return;
+
+            const logArea = document.getElementById('logs');
+            const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
+
+            logArea.innerHTML += `<div style="color:#5fd52a;">[${time}] 🚀 Custom: ${cmd} (target: ${target})</div>`;
+            logArea.scrollTop = logArea.scrollHeight;
+
+            try {
+                const response = await fetch('/send_command', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ device_id: target, command: cmd })
+                });
+                const data = await response.json();
+
+                const status = data.status === 'broadcasted' || data.status === 'sent' ? '✅' : '❌';
+                const msg = data.status === 'broadcasted' || data.status === 'sent' ?
+                    `تم الإرسال إلى ${data.devices || 1} جهاز` :
+                    data.error || 'فشل الإرسال';
+
+                logArea.innerHTML += `<div style="color:#5cff20;">[${time}] ${status} ${msg}</div>`;
+                logArea.scrollTop = logArea.scrollHeight;
+
+                // تحديث الإحصائيات
+                fetchStats();
+
+            } catch (e) {
+                logArea.innerHTML += `<div style="color:#ff3939;">[${time}] ❌ خطأ في الاتصال: ${e.message}</div>`;
+                logArea.scrollTop = logArea.scrollHeight;
+            }
+
+            input.value = '';
+        }
+
+        // ============================================================
+        // تحديث الأجهزة والإحصائيات من الخادم
+        // ============================================================
+        async function fetchStats() {
+            try {
+                const response = await fetch('/status');
+                const data = await response.json();
+                document.getElementById('eventCount').textContent = data.total_devices || 0;
+                document.getElementById('nodes').textContent = data.active_devices || 0;
+            } catch (e) {
+                // الخادم غير متصل، استخدام البيانات المحاكاة
+            }
+        }
+
+        async function fetchDevices() {
+            try {
+                const response = await fetch('/devices');
+                const devices = await response.json();
+                deviceList = devices;
+
+                const select = document.getElementById('targetSelect');
+                select.innerHTML = '<option value="all">🌐 جميع الأجهزة</option>';
+                devices.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.device_id;
+                    opt.textContent = `${d.device_id.slice(0, 10)}... (${d.info?.file || '?'})`;
+                    select.appendChild(opt);
+                });
+
+            } catch (e) {
+                // الخادم غير متصل
+            }
+        }
+
+        setInterval(fetchStats, 5000);
+        setInterval(fetchDevices, 5000);
+        fetchStats();
+        fetchDevices();
+
+        // ============================================================
+        // إدخال الأوامر بالضغط على Enter
+        // ============================================================
+        document.getElementById('commandInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendCustomCommand();
+            }
+        });
+
+        // ============================================================
+        // سجلات النظام
+        // ============================================================
+        console.log('🌍 OMEGA SPECTRE GODFALL // D10');
+        console.log('🔥 نظام التحكم النهائي — 159 ملفاً تحت سيطرتك');
+        console.log('💀 جميع الملفات مرتبطة بالخادم');
+        console.log('📁 الأوامر: exec [file] --[args]');
+        console.log('🛰️ D10 MAP ACTIVE — جميع التهديدات مرصودة');
+    </script>
+
+</body>
+</html>
